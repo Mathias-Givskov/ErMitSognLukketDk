@@ -5,3 +5,11 @@ html, body {
 .container {
     height: 100%;
 }
+
+.district-details-number {
+    font-size: 2.5em;
+}
+
+.source-citation {
+    font-size: 11px;
+}

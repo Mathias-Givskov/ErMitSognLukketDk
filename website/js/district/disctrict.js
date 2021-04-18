@@ -5,7 +5,9 @@ $(function () {
         var config = {
             districtJsonUrl: "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json",
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
-            resultCardContainer: function() { return $(".result-card-container"); }
+            resultCardContainer: function() { return $(".result-card-container"); },
+            resultCardTitleContainer: function() { return $("#result-card-title-container"); },
+            resultCardTitle: function() { return $("#result-card-title"); }
         };
 
         function searchDistrictByCords(x, y) {
@@ -17,41 +19,45 @@ $(function () {
 
                             if (districtData) {
                                 var resultCardContainer = config.resultCardContainer();
-                                var cardElement = $("<div>")
-                                    .addClass("card")
-                                    .addClass("mb-3")
-                                    .addClass("text-white");
-
-                                var cardTitle = $("<h5>")
-                                    .addClass("card-title");
-
-                                var cardBody = $("<div>")
-                                    .addClass("card-body")
-                                    .html(cardTitle);
+                                var resultCardTitleContainer = config.resultCardTitleContainer();
+                                var cardTitle = config.resultCardTitle();
 
                                 if (districtData.is_closed) {
-                                    cardElement.addClass("bg-danger");
+                                    resultCardTitleContainer.addClass("bg-danger");
                                     cardTitle.html("Dit sogn er desværre lukket");
 
                                 } else {
-                                    cardElement.addClass("bg-success");
+                                    resultCardTitleContainer.addClass("bg-success");
                                     cardTitle.html("Dit sogn er åben!!");
                                 }
 
-                                cardElement.html(cardBody);
-                                resultCardContainer.html(cardElement);
+                                function addDetails(idNumber, title, number, description) {
+                                    $("#district-details-title-" + idNumber).html(title);
+                                    $("#district-details-number-" + idNumber).html(number);
+                                    $("#district-details-description-" + idNumber).html(description);
+                                }
+
+                                addDetails(1, "Indbyggertal", districtData.district_population_count, "Antal inbyggere");
+                                addDetails(2, "Incidens", districtData.incidence, "Smittede pr. 100.000");
+                                addDetails(3, "Positiv procent", (Math.round(districtData.positive_percentage * 100) / 100) + "%", "Procent smittede");
+                                addDetails(4, "Nye smittede", districtData.new_infected_count, "Smittede personer den seneste uge");
+
+                                $("#district-details").show();
 
                                 resultCardContainer.show();
 
                                 var geoJsonData = {
+                                    districtData: districtData,
                                     features: searchResponse.data.features,
                                     featureOptions: districtData.is_closed ? { "color": "#FE3249" } : {}
                                 };
 
                                 Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData)
                             }
-                        });
-                });
+                        }
+                    );
+                }
+            );
         }
 
         var eventFunctions = {
