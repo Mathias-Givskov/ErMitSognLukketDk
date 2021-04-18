@@ -49,6 +49,9 @@ $(function () {
         var eventFunctions = {
             autoCompletedSelected: function(selected) {
                 searchDistrictByCords(selected.data.x, selected.data.y);
+            },
+            gotGeoLocationFromDevice: function(position) {
+                searchDistrictByCords(position.coords.longitude, position.coords.latitude);
             }
         };
 
@@ -62,6 +65,10 @@ $(function () {
                 
                 if (Dawa && Dawa.Autocomplete) {
                     Utils.EventEmitter.subscribe(Dawa.Autocomplete.events.selected, eventFunctions.autoCompletedSelected);
+                }
+
+                if (LeafletMap || LeafletMap.CustomMap) {
+                    Utils.EventEmitter.subscribe(LeafletMap.CustomMap.events.gotCurrentLocationFromDevice, eventFunctions.gotGeoLocationFromDevice)
                 }
             }
         };
