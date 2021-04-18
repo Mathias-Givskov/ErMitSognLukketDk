@@ -1,4 +1,4 @@
-var Map = Map || {};
+var LeafletMap = LeafletMap || {};
 
 $(function () {
     (function (customMap) {
@@ -9,21 +9,28 @@ $(function () {
             }
         };
 
+        function removeAllMarkers() {
+            for(var i = 0; i < customMap.main.markers.length; i++) {
+                customMap.main.map.removeLayer(customMap.main.markers[i]);
+            }
+        }
+
+        function setMarkerLocation(x, y) {
+            var latlng = new L.LatLng(x, y);
+            var marker = L.marker(latlng)
+            marker.addTo(customMap.main.map);
+            customMap.main.markers.push(marker);
+            customMap.main.map.setView(latlng, 15);
+        }
+
         var eventFunctions = {
             autoCompletedSelected: function(selected) {
-                for(var i = 0; i < customMap.markers.length; i++) {
-                    customMap.map.removeLayer(customMap.markers[i]);
-                }
-
-                var latlng = new L.LatLng(selected.data.y, selected.data.x);
-				var marker = L.marker(latlng)
-                marker.addTo(customMap.map);
-                customMap.markers.push(marker);
-				customMap.map.setView(latlng, 15);
+                removeAllMarkers();
+                setMarkerLocation(selected.data.y, selected.data.x)
             }
         };
 
-        customMap = {
+        customMap.main = {
             map: {},
             markers: [],
             init: function() {
@@ -31,8 +38,9 @@ $(function () {
                 var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
                 map.addLayer(layer);
 
-                customMap.map = map;
-                customMap.subscribeToEvents();
+                customMap.main.map = map;
+                customMap.main.subscribeToEvents();
+                customMap.main.setToDeviceLocation();
             },
             subscribeToEvents: function() {
                 if (!Utils || !Utils.EventEmitter)
@@ -41,9 +49,28 @@ $(function () {
                 if (Dawa && Dawa.Autocomplete) {
                     Utils.EventEmitter.subscribe(Dawa.Autocomplete.events.selected, eventFunctions.autoCompletedSelected);
                 }
+            },
+            setToDeviceLocation() {
+                function gotPosition(position) {
+                    removeAllMarkers();
+                    setMarkerLocation(position.coords.latitude, position.coords.longitude);
+                    
+                    if (!Utils || !Utils.EventEmitter)
+                        return;
+
+                    Utils.EventEmitter.trigger(customMap.events.gotCurrentLocationFromDevice, position);
+                }
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(gotPosition);
+                }
             }
         };
 
-        customMap.init();
-    })(Map.CustomMap || (Map.CustomMap = {}));
+        customMap.events = {
+            gotCurrentLocationFromDevice: "Map.CustomMap.Event.gotCurrentLocationFromDevice"
+        };
+
+        customMap.main.init();
+    })(LeafletMap.CustomMap || (LeafletMap.CustomMap = {}));
 })
