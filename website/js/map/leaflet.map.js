@@ -27,6 +27,9 @@ $(function () {
             autoCompletedSelected: function(selected) {
                 removeAllMarkers();
                 setMarkerLocation(selected.data.y, selected.data.x)
+            },
+            disctictFound: function (geoJsonData) {
+                L.geoJSON(geoJsonData.features[0], geoJsonData.featureOptions).addTo(customMap.main.map);
             }
         };
 
@@ -49,6 +52,8 @@ $(function () {
                 if (Dawa && Dawa.Autocomplete) {
                     Utils.EventEmitter.subscribe(Dawa.Autocomplete.events.selected, eventFunctions.autoCompletedSelected);
                 }
+
+                Utils.EventEmitter.subscribe("District.main.Event.districtFound", eventFunctions.disctictFound);
             },
             setToDeviceLocation() {
                 function gotPosition(position) {
