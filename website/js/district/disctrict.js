@@ -4,7 +4,7 @@ $(function () {
     (function (main) {
         var config = {
             districtJsonUrl: "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json",
-            districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y; },
+            districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); }
         };
 
@@ -13,7 +13,7 @@ $(function () {
                 .then(function (districtJsonResponse) {
                     axios.get(config.districtSearchUrl(x,y))
                         .then(function (searchResponse) {
-                            var districtData = districtJsonResponse.data.find(function (x) { return x.district == searchResponse.data[0].navn });
+                            var districtData = districtJsonResponse.data.find(function (x) { return x.district == searchResponse.data.features[0].properties.navn });
 
                             if (districtData) {
                                 var resultCardContainer = config.resultCardContainer();
@@ -32,6 +32,7 @@ $(function () {
                                 if (districtData.is_closed) {
                                     cardElement.addClass("bg-danger");
                                     cardTitle.html("Dit sogn er desværre lukket");
+
                                 } else {
                                     cardElement.addClass("bg-success");
                                     cardTitle.html("Dit sogn er åben!!");
@@ -41,6 +42,13 @@ $(function () {
                                 resultCardContainer.html(cardElement);
 
                                 resultCardContainer.show();
+
+                                var geoJsonData = {
+                                    features: searchResponse.data.features,
+                                    featureOptions: districtData.is_closed ? { "color": "#FE3249" } : {}
+                                };
+
+                                Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData)
                             }
                         });
                 });
@@ -55,9 +63,9 @@ $(function () {
             }
         };
 
-        main = {
+        main._local = {
             init: function () {
-                main.subscribeToEvents();
+                main._local.subscribeToEvents();
             },
             subscribeToEvents: function() {
                 if (!Utils || !Utils.EventEmitter)
@@ -73,7 +81,11 @@ $(function () {
             }
         };
 
-        main.init();
+        main.events = {
+            districtFound: "District.main.Event.districtFound"
+        };
 
-    })(District.main || (District.main = {}));
+        main._local.init();
+
+    })(District.Main || (District.Main = {}));
 });
