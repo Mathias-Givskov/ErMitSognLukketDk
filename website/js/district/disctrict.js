@@ -28,7 +28,7 @@ $(function () {
 
                                 } else {
                                     resultCardTitleContainer.addClass("bg-success");
-                                    cardTitle.html("Dit sogn er åben!!");
+                                    cardTitle.html("Dit sogn er åbent!!");
                                 }
 
                                 function addDetails(idNumber, title, number, description) {
