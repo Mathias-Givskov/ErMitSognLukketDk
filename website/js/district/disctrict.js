@@ -23,10 +23,12 @@ $(function () {
                                 var cardTitle = config.resultCardTitle();
 
                                 if (districtData.is_closed) {
+                                    resultCardTitleContainer.removeClass("bg-success");
                                     resultCardTitleContainer.addClass("bg-danger");
                                     cardTitle.html("Dit sogn er desværre lukket");
 
                                 } else {
+                                    resultCardTitleContainer.removeClass("bg-danger");
                                     resultCardTitleContainer.addClass("bg-success");
                                     cardTitle.html("Dit sogn er åbent!!");
                                 }
