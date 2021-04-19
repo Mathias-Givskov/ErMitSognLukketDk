@@ -15,6 +15,12 @@ $(function () {
             }
         }
 
+        function removeAllFeatures() {
+            for(var i = 0; i < customMap.main.features.length; i++) {
+                customMap.main.map.removeLayer(customMap.main.features[i]);
+            }
+        }
+
         function setMarkerLocation(x, y) {
             var latlng = new L.LatLng(x, y);
             var marker = L.marker(latlng)
@@ -26,16 +32,20 @@ $(function () {
         var eventFunctions = {
             autoCompletedSelected: function(selected) {
                 removeAllMarkers();
+                removeAllFeatures();
                 setMarkerLocation(selected.data.y, selected.data.x)
             },
             disctictFound: function (geoJsonData) {
-                L.geoJSON(geoJsonData.features[0], geoJsonData.featureOptions).addTo(customMap.main.map);
+                var feature = L.geoJSON(geoJsonData.features[0], geoJsonData.featureOptions);
+                feature.addTo(customMap.main.map);
+                customMap.main.features.push(feature);
             }
         };
 
         customMap.main = {
             map: {},
             markers: [],
+            features: [],
             init: function() {
                 var map = new L.map('map', config.defaultMapOptions);
                 var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
