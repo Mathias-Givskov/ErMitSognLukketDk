@@ -10,56 +10,61 @@ $(function () {
             resultCardTitle: function() { return $("#result-card-title"); }
         };
 
-        function searchDistrictByCords(x, y) {
-            axios.get(config.districtJsonUrl)
-                .then(function (districtJsonResponse) {
-                    axios.get(config.districtSearchUrl(x,y))
-                        .then(function (searchResponse) {
-                            var districtData = districtJsonResponse.data.find(function (x) { return x.district == searchResponse.data.features[0].properties.navn });
+        function updateDistrictDetails(districtJsonResponse, searchResponse) {
+            var districtData = districtJsonResponse.data.find(function (x) { return x.district == searchResponse.data.features[0].properties.navn });
 
-                            if (districtData) {
-                                var resultCardContainer = config.resultCardContainer();
-                                var resultCardTitleContainer = config.resultCardTitleContainer();
-                                var cardTitle = config.resultCardTitle();
+            if (districtData) {
+                var resultCardContainer = config.resultCardContainer();
+                var resultCardTitleContainer = config.resultCardTitleContainer();
+                var cardTitle = config.resultCardTitle();
 
-                                if (districtData.is_closed) {
-                                    resultCardTitleContainer.removeClass("bg-success");
-                                    resultCardTitleContainer.addClass("bg-danger");
-                                    cardTitle.html("Dit sogn er desværre lukket");
+                if (districtData.is_closed) {
+                    resultCardTitleContainer.removeClass("bg-success");
+                    resultCardTitleContainer.addClass("bg-danger");
+                    cardTitle.html("Dit sogn er desværre lukket");
 
-                                } else {
-                                    resultCardTitleContainer.removeClass("bg-danger");
-                                    resultCardTitleContainer.addClass("bg-success");
-                                    cardTitle.html("Dit sogn er åbent!!");
-                                }
-
-                                function addDetails(idNumber, title, number, description) {
-                                    $("#district-details-title-" + idNumber).html(title);
-                                    $("#district-details-number-" + idNumber).html(number);
-                                    $("#district-details-description-" + idNumber).html(description);
-                                }
-
-                                addDetails(1, "Indbyggertal", districtData.district_population_count, "Antal inbyggere");
-                                addDetails(2, "Incidens", districtData.incidence, "Smittede pr. 100.000");
-                                addDetails(3, "Positiv procent", (Math.round(districtData.positive_percentage * 100) / 100) + "%", "Procent smittede");
-                                addDetails(4, "Nye smittede", districtData.new_infected_count, "Smittede personer den seneste uge");
-
-                                $("#district-details").show();
-
-                                resultCardContainer.show();
-
-                                var geoJsonData = {
-                                    districtData: districtData,
-                                    features: searchResponse.data.features,
-                                    featureOptions: districtData.is_closed ? { "color": "#FE3249" } : {}
-                                };
-
-                                Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData)
-                            }
-                        }
-                    );
+                } else {
+                    resultCardTitleContainer.removeClass("bg-danger");
+                    resultCardTitleContainer.addClass("bg-success");
+                    cardTitle.html("Dit sogn er åbent!!");
                 }
-            );
+
+                function addDetails(idNumber, title, number, description) {
+                    $("#district-details-title-" + idNumber).html(title);
+                    $("#district-details-number-" + idNumber).html(number);
+                    $("#district-details-description-" + idNumber).html(description);
+                }
+
+                addDetails(1, "Indbyggertal", districtData.district_population_count, "Antal inbyggere");
+                addDetails(2, "Incidens", districtData.incidence, "Smittede pr. 100.000");
+                addDetails(3, "Positiv procent", (Math.round(districtData.positive_percentage * 100) / 100) + "%", "Procent smittede");
+                addDetails(4, "Nye smittede", districtData.new_infected_count, "Smittede personer den seneste uge");
+
+                $("#district-details").show();
+
+                resultCardContainer.show();
+
+                var geoJsonData = {
+                    districtData: districtData,
+                    features: searchResponse.data.features,
+                    featureOptions: districtData.is_closed ? { "color": "#FE3249" } : {}
+                };
+
+                Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData);
+            }
+        }
+
+        function searchDistrictByCords(x, y) {
+            function handleDistrictJson(districtJsonResponse) {
+                axios.get(config.districtSearchUrl(x,y))
+                    .then(function(searchResponse) {
+                        updateDistrictDetails(districtJsonResponse, searchResponse);
+                    }
+                );
+            }
+
+            axios.get(config.districtJsonUrl)
+                .then(handleDistrictJson);
         }
 
         var eventFunctions = {
