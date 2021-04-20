@@ -53,7 +53,7 @@ $(function () {
 
                 customMap.main.map = map;
                 customMap.main.subscribeToEvents();
-                customMap.main.setToDeviceLocation();
+                customMap.main.setDefaultLocation();
             },
             subscribeToEvents: function() {
                 if (!Utils || !Utils.EventEmitter)
@@ -65,7 +65,30 @@ $(function () {
 
                 Utils.EventEmitter.subscribe("District.main.Event.districtFound", eventFunctions.disctictFound);
             },
-            setToDeviceLocation() {
+            setDefaultLocation: function() {
+                if (Utils && Utils.UrlHelper) {
+                    var coordsQsParam = Utils.UrlHelper.getQueryStringParameter("coordinates", true);
+                    if (!coordsQsParam) {
+                        customMap.main.setToDeviceLocation();
+                        return;
+                    }
+
+                    coordsQsParam.coords.forEach(function(coord) {
+                        setMarkerLocation(coord.x, coord.y);
+
+                        var eventObj = {
+                            coords: {
+                                latitude: coord.x,
+                                longitude: coord.y
+                            }
+                        };
+                        setTimeout(function () {
+                            Utils.EventEmitter.trigger(customMap.events.gotCurrentLocationFromDevice, eventObj);
+                        }, 1);
+                    });
+                }
+            },
+            setToDeviceLocation: function() {
                 function gotPosition(position) {
                     removeAllMarkers();
                     setMarkerLocation(position.coords.latitude, position.coords.longitude);
