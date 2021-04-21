@@ -5,6 +5,9 @@ namespace ermitsognnedeFunctions.Models
 {
     public class DistrictDataJsonModel
     {
+        [JsonProperty("district_code")]
+        public int DistrictCode { get; set; }
+
         [JsonProperty("district")]
         public string District { get; set; }
 
