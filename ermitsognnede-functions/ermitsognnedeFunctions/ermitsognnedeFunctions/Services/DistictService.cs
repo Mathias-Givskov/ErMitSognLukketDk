@@ -23,14 +23,15 @@ namespace ermitsognnedeFunctions.Services
 
                 result.Add(new DistrictDataJsonModel
                 {
-                    District = row.GetCell(1)?.StringCellValue,
-                    Municipality = row.GetCell(2)?.StringCellValue,
-                    DistrictPopulationCount = (int)row.GetCell(3)?.NumericCellValue,
-                    Incidence = (int)row.GetCell(4)?.NumericCellValue,
-                    NewInfectedCount = (int)row.GetCell(5)?.NumericCellValue,
-                    PositivePercentage = (double)(row.GetCell(6)?.NumericCellValue),
-                    IsClosed = row.GetCell(7)?.StringCellValue?.ToLower() == "nedlukket",
-                    StartOfLatestAutomaticShutdown = row.GetCell(8)?.CellType == CellType.String ? null : row.GetCell(8)?.DateCellValue
+                    DistrictCode = (int)row.GetCell(1)?.NumericCellValue,
+                    District = row.GetCell(2)?.StringCellValue,
+                    Municipality = row.GetCell(3)?.StringCellValue,
+                    DistrictPopulationCount = (int)row.GetCell(4)?.NumericCellValue,
+                    Incidence = (int)row.GetCell(5)?.NumericCellValue,
+                    NewInfectedCount = (int)row.GetCell(6)?.NumericCellValue,
+                    PositivePercentage = (double)(row.GetCell(7)?.NumericCellValue),
+                    IsClosed = row.GetCell(8)?.StringCellValue?.ToLower() == "nedlukket",
+                    StartOfLatestAutomaticShutdown = row.GetCell(9)?.CellType == CellType.String ? null : row.GetCell(9)?.DateCellValue
                 });
             }
 
