@@ -3,7 +3,44 @@ var District = District || {};
 $(function () {
     (function (main) {
         var config = {
-            districtJsonUrl: "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json",
+            districtJsonUrl: function () {
+                function getTimeOfDayInSeconds(date) {
+                    return date.getSeconds() + (60 * (date.getMinutes() + (60 * date.getHours())));
+                }
+
+                var districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
+                if (districtJsonNextDownloadDate) {
+                    var currentDate = new Date();
+                    var nextRefreshDate = new Date(districtJsonNextDownloadDate);
+                    nextRefreshDate.setHours(14);
+                    nextRefreshDate.setMinutes(2);
+                    nextRefreshDate.setSeconds(0);
+
+                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
+                        nextRefreshDate.setDate(currentDate.getDate() + 1);
+                    }
+
+                    var testDate = new Date();
+                    testDate.setDate(currentDate.getDate() + 1);
+                    if (nextRefreshDate.getDate() < testDate.getDate())
+                        localStorage.setItem("district-json-next-download-date", nextRefreshDate);
+                } else {
+                    var currentDate = new Date();
+                    var nextRefreshDate = new Date();
+                    nextRefreshDate.setHours(14);
+                    nextRefreshDate.setMinutes(2);
+                    nextRefreshDate.setSeconds(0);
+
+                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
+                        nextRefreshDate.setDate(currentDate.getDate() + 1)
+                    }
+
+                    localStorage.setItem("district-json-next-download-date", nextRefreshDate);
+                }
+
+                var nextRefreshDate = new Date(districtJsonNextDownloadDate);
+                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime();
+            },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
             resultCardTitleContainer: function() { return $("#result-card-title-container"); },
@@ -63,7 +100,7 @@ $(function () {
                 );
             }
 
-            axios.get(config.districtJsonUrl)
+            axios.get(config.districtJsonUrl())
                 .then(handleDistrictJson);
         }
 

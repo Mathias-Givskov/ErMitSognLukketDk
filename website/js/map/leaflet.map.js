@@ -9,6 +9,10 @@ $(function () {
             }
         };
 
+        function createQueryStringObject(x, y) {
+            return { coords: [{"x": x, "y": y}] };
+        }
+
         function removeAllMarkers() {
             for(var i = 0; i < customMap.main.markers.length; i++) {
                 customMap.main.map.removeLayer(customMap.main.markers[i]);
@@ -33,7 +37,10 @@ $(function () {
             autoCompletedSelected: function(selected) {
                 removeAllMarkers();
                 removeAllFeatures();
-                setMarkerLocation(selected.data.y, selected.data.x)
+                setMarkerLocation(selected.data.y, selected.data.x);
+
+                var queryStringParameterObj = createQueryStringObject(selected.data.y, selected.data.x);
+                Utils.UrlHelper.setQueryStringParameter("coordinates", queryStringParameterObj, true, true);
             },
             disctictFound: function (geoJsonData) {
                 var feature = L.geoJSON(geoJsonData.features[0], geoJsonData.featureOptions);
@@ -53,7 +60,7 @@ $(function () {
 
                 customMap.main.map = map;
                 customMap.main.subscribeToEvents();
-                customMap.main.setToDeviceLocation();
+                customMap.main.setDefaultLocation();
             },
             subscribeToEvents: function() {
                 if (!Utils || !Utils.EventEmitter)
@@ -65,7 +72,30 @@ $(function () {
 
                 Utils.EventEmitter.subscribe("District.main.Event.districtFound", eventFunctions.disctictFound);
             },
-            setToDeviceLocation() {
+            setDefaultLocation: function() {
+                if (Utils && Utils.UrlHelper) {
+                    var coordsQsParam = Utils.UrlHelper.getQueryStringParameter("coordinates", true);
+                    if (!coordsQsParam) {
+                        customMap.main.setToDeviceLocation();
+                        return;
+                    }
+
+                    coordsQsParam.coords.forEach(function(coord) {
+                        setMarkerLocation(coord.x, coord.y);
+
+                        var eventObj = {
+                            coords: {
+                                latitude: coord.x,
+                                longitude: coord.y
+                            }
+                        };
+                        setTimeout(function () {
+                            Utils.EventEmitter.trigger(customMap.events.gotCurrentLocationFromDevice, eventObj);
+                        }, 1);
+                    });
+                }
+            },
+            setToDeviceLocation: function() {
                 function gotPosition(position) {
                     removeAllMarkers();
                     setMarkerLocation(position.coords.latitude, position.coords.longitude);
