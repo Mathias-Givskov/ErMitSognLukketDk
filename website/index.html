@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div id="about-modal" class="modal fade" tabindex="-1">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Om</h5>
@@ -49,11 +49,11 @@
                             </b>
                             <p>Data kilder:
                                 <ul>
-                                    <li>Statens Serum Institut</li>
-                                    <li>Danmarks Adressers Web API</li>
+                                    <li><a href="https://www.ssi.dk/">Statens Serum Institut</a></li>
+                                    <li><a href="https://dawadocs.dataforsyningen.dk/">Danmarks Adressers Web API</a> (<a href="https://autocomplete.dataforsyningen.dk/">DAWA autocomplete</a>, <a href="https://dawadocs.dataforsyningen.dk/dok/api#sogne">Sogne API</a>)</li>
                                 </ul>
                             </p>
-                            Siden er udviklet af Mathias Givskov
+                            Siden er udviklet af Mathias Givskov i samarbejde med <a href="https://www.mcb.dk/">MCB A/S</a>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Luk</button>
@@ -69,11 +69,10 @@
                   <div id="map"></div>
                 </div>
             </div>
-
             <div class="result-card-container mb-3" style="display: none;">
                 <div id="result-card-element" class="card mb-3 text-white">
                     <div id="result-card-title-container" class="card-header text-white">
-                        <h2 id="result-card-title"></h3>
+                        <h2 id="result-card-title"></h2>
                     </div>
                     <div class="card-body bg-light text-dark">
                         <div class="card-title">
