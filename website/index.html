@@ -22,9 +22,44 @@
    </head>
    <body>
         <div class="container">
-            <div class="mb-3">
-                <h1>Er mit sogn lukket?</h1>
-                <p>Søg efter din addresse nedenfor og find ud af om dit sogn er lukket</p>
+            <div class="header">
+                <div class="mb-3">
+                    <div class="btn-group float-end mt-1">
+                        <button type="button float-end" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#about-modal">
+                            ?
+                        </button>
+                    </div>
+                    <h1>Er mit sogn lukket?</h1>
+                    <p>Søg efter din addresse nedenfor og find ud af om dit sogn er lukket</p>
+                </div>
+            </div>
+            <div id="about-modal" class="modal fade" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Om</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                            Denne side kan vise om sognet som den givet addresse befinder sig i er lukket.
+                            <br>Samt data omkring dette sogn.
+                            <br>Sidens formål er at gøre det nemt og hurtigt at se om et sogn er lukket.
+                            </p>
+                            </b>
+                            <p>Data kilder:
+                                <ul>
+                                    <li><a href="https://www.ssi.dk/">Statens Serum Institut</a></li>
+                                    <li><a href="https://dawadocs.dataforsyningen.dk/">Danmarks Adressers Web API</a> (<a href="https://autocomplete.dataforsyningen.dk/">DAWA autocomplete</a>, <a href="https://dawadocs.dataforsyningen.dk/dok/api#sogne">Sogne API</a>)</li>
+                                </ul>
+                            </p>
+                            Siden er udviklet af Mathias Givskov i samarbejde med <a href="https://www.mcb.dk/">MCB A/S</a>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Luk</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="autocomplete-container input-group mb-3" style="width: 100%; max-width: 100%;">
                 <input type="search" id="dawa-autocomplete-input" class="form-control" placeholder="Indtast addresse">
@@ -34,11 +69,10 @@
                   <div id="map"></div>
                 </div>
             </div>
-
             <div class="result-card-container mb-3" style="display: none;">
                 <div id="result-card-element" class="card mb-3 text-white">
                     <div id="result-card-title-container" class="card-header text-white">
-                        <h2 id="result-card-title"></h3>
+                        <h2 id="result-card-title"></h2>
                     </div>
                     <div class="card-body bg-light text-dark">
                         <div class="card-title">
@@ -68,8 +102,20 @@
                     </div>
                 </div>
             </div>
-
-            <div>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Hvad skal der til for at et sogn skal lukke ned?</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Et sogn skal lukke ned hvis følgende tre parametre er opfyldt:</h6>
+                    <ul>
+                        <li>Der er mere end 400 smittede pr. 100.000 borgere.</li>
+                        <li>Der er 20 eller flere smittetilfælde i alt de sidste syv dage.</li>
+                        <li>Positivprocenten er på 2 procent eller mere.</li>
+                    </ul>  
+                </div>
+            </div>
+            <div class="mb-3">
                 <spa class="source-citation text-muted">Data kommer fra <a class="text-muted" href="https://covid19.ssi.dk/overvagningsdata/opgoerelser-over-covid-19-incidenser-og-vaekstrater">Statens Serum Institut</a> og opdateres hver dag kl. 14</spa>
             </div>
         </div>
