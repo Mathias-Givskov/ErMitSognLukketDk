@@ -44,7 +44,9 @@ $(function () {
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
             resultCardTitleContainer: function() { return $("#result-card-title-container"); },
-            resultCardTitle: function() { return $("#result-card-title"); }
+            resultCardTitle: function() { return $("#result-card-title"); },
+            resultCardDistrict: function() { return $("#result-card-district"); },
+            resultCardMunicipality: function() { return $("#result-card-municipality"); }
         };
 
         function updateDistrictDetails(districtJsonResponse, searchResponse) {
@@ -54,6 +56,8 @@ $(function () {
                 var resultCardContainer = config.resultCardContainer();
                 var resultCardTitleContainer = config.resultCardTitleContainer();
                 var cardTitle = config.resultCardTitle();
+                var cardDistrict = config.resultCardDistrict();
+                var cardMunicipality = config.resultCardMunicipality();
 
                 if (districtData.is_closed) {
                     resultCardTitleContainer.removeClass("bg-success");
@@ -65,6 +69,9 @@ $(function () {
                     resultCardTitleContainer.addClass("bg-success");
                     cardTitle.html("Dit sogn er åbent!");
                 }
+
+                cardDistrict.html(districtData.district.trim() + " sogn");
+                cardMunicipality.html(districtData.municipality);
 
                 function addDetails(idNumber, title, number, description) {
                     $("#district-details-title-" + idNumber).html(title);
