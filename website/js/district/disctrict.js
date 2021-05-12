@@ -42,12 +42,20 @@ $(function () {
                 var manualVersion = "1";
                 return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime() + manualVersion;
             },
+            districtThresholds: {
+                incidens: 500,
+                newCases: 20,
+                postivePercentage: 2.5
+            },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
             resultCardTitleContainer: function() { return $("#result-card-title-container"); },
             resultCardTitle: function() { return $("#result-card-title"); },
             resultCardDistrict: function() { return $("#result-card-district"); },
-            resultCardMunicipality: function() { return $("#result-card-municipality"); }
+            resultCardMunicipality: function() { return $("#result-card-municipality"); },
+            thresholdincidensSpan: function() { return $("#threshold-incidens"); },
+            thresholdNewcasesSpan: function() { return $("#threshold-newcases"); },
+            thresholdpostivePercentageSpan: function() { return $("#threshold-postivepercentage"); }
         };
 
         function updateDistrictDetails(districtJsonResponse, searchResponse) {
@@ -125,6 +133,7 @@ $(function () {
         main._local = {
             init: function () {
                 main._local.subscribeToEvents();
+                main._local.writeDistrictThresholds();
             },
             subscribeToEvents: function() {
                 if (!Utils || !Utils.EventEmitter)
@@ -137,6 +146,11 @@ $(function () {
                 if (LeafletMap || LeafletMap.CustomMap) {
                     Utils.EventEmitter.subscribe(LeafletMap.CustomMap.events.gotCurrentLocationFromDevice, eventFunctions.gotGeoLocationFromDevice)
                 }
+            },
+            writeDistrictThresholds: function() {
+                config.thresholdincidensSpan().html(config.districtThresholds.incidens);
+                config.thresholdNewcasesSpan().html(config.districtThresholds.newCases);
+                config.thresholdpostivePercentageSpan().html(config.districtThresholds.postivePercentage.toString().replace('.', ','));
             }
         };
 
