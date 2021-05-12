@@ -59,7 +59,7 @@ $(function () {
         };
 
         function updateDistrictDetails(districtJsonResponse, searchResponse) {
-            var districtData = districtJsonResponse.data.find(function (x) { return x.district == searchResponse.data.features[0].properties.navn });
+            var districtData = districtJsonResponse.data.find(function (x) { return x.district_code == searchResponse.data.features[0].properties.kode });
 
             if (districtData) {
                 var resultCardContainer = config.resultCardContainer();
