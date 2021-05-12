@@ -39,7 +39,8 @@ $(function () {
                 }
 
                 var nextRefreshDate = new Date(districtJsonNextDownloadDate);
-                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime();
+                var manualVersion = "1";
+                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime() + manualVersion;
             },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
@@ -74,13 +75,14 @@ $(function () {
                 cardMunicipality.html(districtData.municipality);
 
                 function addDetails(idNumber, title, number, description) {
+                    number = number.toString().replace(".", ",");
                     $("#district-details-title-" + idNumber).html(title);
                     $("#district-details-number-" + idNumber).html(number);
                     $("#district-details-description-" + idNumber).html(description);
                 }
 
                 addDetails(1, "Indbyggertal", districtData.district_population_count, "Antal inbyggere");
-                addDetails(2, "Incidens", districtData.incidence, "Smittede pr. 100.000");
+                addDetails(2, "Incidens", Math.round(districtData.incidence), "Smittede pr. 100.000");
                 addDetails(3, "Positiv procent", (Math.round(districtData.positive_percentage * 100) / 100) + "%", "Procent smittede");
                 addDetails(4, "Nye smittede", districtData.new_infected_count, "Smittede personer den seneste uge");
 
