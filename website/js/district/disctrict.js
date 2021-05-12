@@ -59,7 +59,11 @@ $(function () {
         };
 
         function updateDistrictDetails(districtJsonResponse, searchResponse) {
-            var districtData = districtJsonResponse.data.find(function (x) { return x.district_code == searchResponse.data.features[0].properties.kode });
+            var districtData = districtJsonResponse.data.find(function (x) {
+                if (searchResponse.data.features[0])
+                    return x.district_code == searchResponse.data.features[0].properties.kode;
+                return false;
+            });
 
             if (districtData) {
                 var resultCardContainer = config.resultCardContainer();
@@ -117,6 +121,9 @@ $(function () {
                 };
 
                 Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData);
+            } else {
+                config.resultCardContainer().hide();
+                $("#district-details").hide();
             }
         }
 
