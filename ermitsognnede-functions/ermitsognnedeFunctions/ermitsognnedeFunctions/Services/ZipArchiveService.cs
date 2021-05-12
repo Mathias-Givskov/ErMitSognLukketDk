@@ -1,4 +1,5 @@
-﻿using ermitsognnedeFunctions.Services.Interfaces;
+﻿using ermitsognnedeFunctions.Models;
+using ermitsognnedeFunctions.Services.Interfaces;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace ermitsognnedeFunctions.Services
 {
     public class ZipArchiveService : IZipArchiveService
     {
-        public async Task<Stream> GetDistictData(Stream zipArchiveStream)
+        public async Task<FileModel> GetDistictData(Stream zipArchiveStream)
         {
 
             var memStream = new MemoryStream();
@@ -16,8 +17,15 @@ namespace ermitsognnedeFunctions.Services
             using (var archive = new ZipArchive(zipArchiveStream))
             {
                 var districtEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("sognedata-covid-19"));
+                if (districtEntry == null)
+                    districtEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("sognedata"));
+
                 await districtEntry.Open().CopyToAsync(memStream);
-                return memStream;
+                return new FileModel
+                {
+                    FileName = districtEntry.FullName,
+                    Stream = memStream
+                };
             }
         }
     }

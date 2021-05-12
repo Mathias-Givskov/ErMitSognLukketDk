@@ -18,7 +18,7 @@ namespace ermitsognnedeFunctions.Models
         public int DistrictPopulationCount { get; set; }
 
         [JsonProperty("incidence")]
-        public int Incidence { get; set; }
+        public double Incidence { get; set; }
 
         [JsonProperty("new_infected_count")]
         public int NewInfectedCount { get; set; }

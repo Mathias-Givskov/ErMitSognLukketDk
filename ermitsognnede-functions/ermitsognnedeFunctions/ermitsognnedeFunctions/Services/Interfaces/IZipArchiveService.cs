@@ -1,10 +1,11 @@
-﻿using System.IO;
+﻿using ermitsognnedeFunctions.Models;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ermitsognnedeFunctions.Services.Interfaces
 {
     public interface IZipArchiveService
     {
-        Task<Stream> GetDistictData(Stream zipArchiveStream);
+        Task<FileModel> GetDistictData(Stream zipArchiveStream);
     }
 }
