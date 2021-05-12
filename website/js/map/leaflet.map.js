@@ -25,19 +25,23 @@ $(function () {
             }
         }
 
-        function setMarkerLocation(x, y) {
+        function setMarkerLocation(x, y, keepZoomLevel) {
             var latlng = new L.LatLng(x, y);
             var marker = L.marker(latlng)
             marker.addTo(customMap.main.map);
             customMap.main.markers.push(marker);
-            customMap.main.map.setView(latlng, 15);
+            if (keepZoomLevel) {
+                customMap.main.map.setView(latlng);
+            } else {
+                customMap.main.map.setView(latlng, 15);
+            }
         }
 
         var eventFunctions = {
             autoCompletedSelected: function(selected) {
                 removeAllMarkers();
                 removeAllFeatures();
-                setMarkerLocation(selected.data.y, selected.data.x);
+                setMarkerLocation(selected.data.y, selected.data.x, selected.keepZoomLevel);
 
                 var queryStringParameterObj = createQueryStringObject(selected.data.y, selected.data.x);
                 Utils.UrlHelper.setQueryStringParameter("coordinates", queryStringParameterObj, true, true);
@@ -57,6 +61,17 @@ $(function () {
                 var map = new L.map('map', config.defaultMapOptions);
                 var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
                 map.addLayer(layer);
+                map.on('click', function(e) {
+                    var selected = {
+                        data: {
+                            x: e.latlng.lng,
+                            y: e.latlng.lat
+                        },
+                        keepZoomLevel: true
+                    };
+
+                    Utils.EventEmitter.trigger(Dawa.Autocomplete.events.selected, selected);
+                });
 
                 customMap.main.map = map;
                 customMap.main.subscribeToEvents();
