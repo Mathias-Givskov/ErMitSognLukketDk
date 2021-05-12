@@ -82,17 +82,29 @@ $(function () {
                 cardDistrict.html(districtData.district.trim() + " sogn");
                 cardMunicipality.html(districtData.municipality);
 
-                function addDetails(idNumber, title, number, description) {
+                function addDetails(idNumber, title, number, description, isAboveThreshold) {
                     number = number.toString().replace(".", ",");
                     $("#district-details-title-" + idNumber).html(title);
                     $("#district-details-number-" + idNumber).html(number);
                     $("#district-details-description-" + idNumber).html(description);
+
+                    if (isAboveThreshold) {
+                        $("#district-details-number-" + idNumber).addClass("text-danger")
+                            .attr("data-toggle", "tooltip")
+                            .attr("data-placement", "top")
+                            .attr("title", "Grænse overskrevet");
+                    } else {
+                        $("#district-details-number-" + idNumber).removeClass("text-danger")
+                            .attr("data-toggle", "")
+                            .attr("data-placement", "")
+                            .attr("title", "");
+                    }
                 }
 
-                addDetails(1, "Indbyggertal", districtData.district_population_count, "Antal inbyggere");
-                addDetails(2, "Incidens", Math.round(districtData.incidence), "Smittede pr. 100.000");
-                addDetails(3, "Positiv procent", (Math.round(districtData.positive_percentage * 100) / 100) + "%", "Procent smittede");
-                addDetails(4, "Nye smittede", districtData.new_infected_count, "Smittede personer den seneste uge");
+                addDetails(1, "Indbyggertal", districtData.district_population_count, "Antal inbyggere", false);
+                addDetails(2, "Incidens", Math.round(districtData.incidence), "Smittede pr. 100.000", Math.round(districtData.incidence) >= config.districtThresholds.incidens);
+                addDetails(3, "Positiv procent", (Math.round(districtData.positive_percentage * 100) / 100) + "%", "Procent smittede", (Math.round(districtData.positive_percentage * 100) / 100) >= config.districtThresholds.postivePercentage);
+                addDetails(4, "Nye smittede", districtData.new_infected_count, "Smittede personer den seneste uge", districtData.new_infected_count >= config.districtThresholds.newCases);
 
                 $("#district-details").show();
 
