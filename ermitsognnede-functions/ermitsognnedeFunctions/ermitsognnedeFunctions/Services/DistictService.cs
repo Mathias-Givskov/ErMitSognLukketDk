@@ -80,11 +80,69 @@ namespace ermitsognnedeFunctions.Services
                         Municipality = csvModel.Municipality.ToLowerInvariant() == "na" ? null : csvModel.Municipality,
                         Municipality2 = csvModel.Municipality2.ToLowerInvariant() == "na" ? null : csvModel.Municipality2,
                         Municipality3 = csvModel.Municipality3.ToLowerInvariant() == "na" ? null : csvModel.Municipality3,
+                        MuncipalityDetails = GetMunicipalityDetailModels(csvModel, municipalityModels),
                         NewInfectedCount = csvModel.NewInfectedCount,
                         PositivePercentage = csvModel.PositivePercentage,
                         StartOfLatestAutomaticShutdown = StartOfLatestAutomaticShutdownDate
                     });
                 }
+            }
+
+            return results;
+        }
+
+        private List<MunicipalityDetailModel> GetMunicipalityDetailModels(DistrictDataCsvModel districtDataCsvModel, List<MunicipalityDataCsvModel> closedMunicipalityDataCsvModels)
+        {
+            bool? GetClosedStatus(string municipality, int municipalityCode)
+            {
+                return closedMunicipalityDataCsvModels
+                    ?.FirstOrDefault(x => x?.Municipality?.ToLowerInvariant() == municipality?.ToLowerInvariant() && x?.MunicipalityCode == municipalityCode)
+                    ?.StatusForAutomaticClosing?.ToLowerInvariant() == "nedlukket";
+            }
+
+            DateTime? GetStartOfLatestAutomaticShutdown(string municipality, int municipalityCode)
+            {
+                var closedMunicipalityDataCsvModel = closedMunicipalityDataCsvModels
+                    ?.FirstOrDefault(x => x?.Municipality?.ToLowerInvariant() == municipality?.ToLowerInvariant() && x?.MunicipalityCode == municipalityCode);
+
+                return closedMunicipalityDataCsvModel?.StartOfLatestAutomaticShutdown?.ToLowerInvariant() != "na" && DateTime.TryParse(closedMunicipalityDataCsvModel?.StartOfLatestAutomaticShutdown, out var dateValue)
+                    ? dateValue
+                    : default(DateTime?);
+            }
+
+            var results = new List<MunicipalityDetailModel>();
+
+            if (!string.IsNullOrEmpty(districtDataCsvModel.Municipality) && districtDataCsvModel.MunicipalityCode > -1)
+            {
+                results.Add(new MunicipalityDetailModel
+                {
+                    Muncipality = districtDataCsvModel.Municipality,
+                    MunicipalityCode = districtDataCsvModel.MunicipalityCode,
+                    IsClosed = GetClosedStatus(districtDataCsvModel.Municipality, districtDataCsvModel.MunicipalityCode),
+                    StartOfLatestAutomaticShutdown = GetStartOfLatestAutomaticShutdown(districtDataCsvModel.Municipality, districtDataCsvModel.MunicipalityCode)
+                });
+            }
+
+            if (!string.IsNullOrEmpty(districtDataCsvModel.Municipality2) && districtDataCsvModel.MunicipalityCode2 > -1)
+            {
+                results.Add(new MunicipalityDetailModel
+                {
+                    Muncipality = districtDataCsvModel.Municipality2,
+                    MunicipalityCode = districtDataCsvModel.MunicipalityCode2,
+                    IsClosed = GetClosedStatus(districtDataCsvModel.Municipality2, districtDataCsvModel.MunicipalityCode2),
+                    StartOfLatestAutomaticShutdown = GetStartOfLatestAutomaticShutdown(districtDataCsvModel.Municipality2, districtDataCsvModel.MunicipalityCode2)
+                });
+            }
+
+            if (!string.IsNullOrEmpty(districtDataCsvModel.Municipality3) && districtDataCsvModel.MunicipalityCode3 > -1)
+            {
+                results.Add(new MunicipalityDetailModel
+                {
+                    Muncipality = districtDataCsvModel.Municipality3,
+                    MunicipalityCode = districtDataCsvModel.MunicipalityCode3,
+                    IsClosed = GetClosedStatus(districtDataCsvModel.Municipality3, districtDataCsvModel.MunicipalityCode3),
+                    StartOfLatestAutomaticShutdown = GetStartOfLatestAutomaticShutdown(districtDataCsvModel.Municipality3, districtDataCsvModel.MunicipalityCode3)
+                });
             }
 
             return results;
