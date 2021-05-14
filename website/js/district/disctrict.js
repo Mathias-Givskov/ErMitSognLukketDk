@@ -39,7 +39,7 @@ $(function () {
                 }
 
                 var nextRefreshDate = new Date(districtJsonNextDownloadDate);
-                var manualVersion = "1";
+                var manualVersion = "2";
                 return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime() + manualVersion;
             },
             districtThresholds: {
