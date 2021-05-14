@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace ermitsognnedeFunctions.Models
 {
@@ -14,6 +15,15 @@ namespace ermitsognnedeFunctions.Models
         [JsonProperty("municipality")]
         public string Municipality { get; set; }
 
+        [JsonProperty("municipality_2")]
+        public string Municipality2 { get; set; }
+
+        [JsonProperty("municipality_3")]
+        public string Municipality3 { get; set; }
+
+        [JsonProperty("municipality_details")]
+        public List<MunicipalityDetailModel> MuncipalityDetails { get; set; }
+
         [JsonProperty("district_population_count")]
         public int DistrictPopulationCount { get; set; }
 
@@ -25,6 +35,21 @@ namespace ermitsognnedeFunctions.Models
 
         [JsonProperty("positive_percentage")]
         public double PositivePercentage { get; set; }
+
+        [JsonProperty("is_closed")]
+        public bool? IsClosed { get; set; }
+
+        [JsonProperty("start_of_latest_automatic_shutdown")]
+        public DateTime? StartOfLatestAutomaticShutdown { get; set; }
+    }
+
+    public class MunicipalityDetailModel
+    {
+        [JsonProperty("municipality")]
+        public int MunicipalityCode { get; set; }
+
+        [JsonProperty("municipality_code")]
+        public string Muncipality { get; set; }
 
         [JsonProperty("is_closed")]
         public bool? IsClosed { get; set; }
