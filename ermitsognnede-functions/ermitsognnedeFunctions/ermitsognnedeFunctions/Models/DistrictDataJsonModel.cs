@@ -46,10 +46,10 @@ namespace ermitsognnedeFunctions.Models
     public class MunicipalityDetailModel
     {
         [JsonProperty("municipality")]
-        public int MunicipalityCode { get; set; }
+        public string Municipality { get; set; }
 
         [JsonProperty("municipality_code")]
-        public string Muncipality { get; set; }
+        public int MunicipalityCode { get; set; }
 
         [JsonProperty("is_closed")]
         public bool? IsClosed { get; set; }

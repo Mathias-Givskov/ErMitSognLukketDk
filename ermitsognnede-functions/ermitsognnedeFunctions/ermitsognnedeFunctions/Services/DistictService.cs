@@ -116,7 +116,7 @@ namespace ermitsognnedeFunctions.Services
             {
                 results.Add(new MunicipalityDetailModel
                 {
-                    Muncipality = districtDataCsvModel.Municipality,
+                    Municipality = districtDataCsvModel.Municipality,
                     MunicipalityCode = districtDataCsvModel.MunicipalityCode,
                     IsClosed = GetClosedStatus(districtDataCsvModel.Municipality, districtDataCsvModel.MunicipalityCode),
                     StartOfLatestAutomaticShutdown = GetStartOfLatestAutomaticShutdown(districtDataCsvModel.Municipality, districtDataCsvModel.MunicipalityCode)
@@ -127,7 +127,7 @@ namespace ermitsognnedeFunctions.Services
             {
                 results.Add(new MunicipalityDetailModel
                 {
-                    Muncipality = districtDataCsvModel.Municipality2,
+                    Municipality = districtDataCsvModel.Municipality2,
                     MunicipalityCode = districtDataCsvModel.MunicipalityCode2,
                     IsClosed = GetClosedStatus(districtDataCsvModel.Municipality2, districtDataCsvModel.MunicipalityCode2),
                     StartOfLatestAutomaticShutdown = GetStartOfLatestAutomaticShutdown(districtDataCsvModel.Municipality2, districtDataCsvModel.MunicipalityCode2)
@@ -138,7 +138,7 @@ namespace ermitsognnedeFunctions.Services
             {
                 results.Add(new MunicipalityDetailModel
                 {
-                    Muncipality = districtDataCsvModel.Municipality3,
+                    Municipality = districtDataCsvModel.Municipality3,
                     MunicipalityCode = districtDataCsvModel.MunicipalityCode3,
                     IsClosed = GetClosedStatus(districtDataCsvModel.Municipality3, districtDataCsvModel.MunicipalityCode3),
                     StartOfLatestAutomaticShutdown = GetStartOfLatestAutomaticShutdown(districtDataCsvModel.Municipality3, districtDataCsvModel.MunicipalityCode3)
