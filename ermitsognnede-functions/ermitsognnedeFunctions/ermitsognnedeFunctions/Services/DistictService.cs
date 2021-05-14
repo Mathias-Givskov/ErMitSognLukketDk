@@ -78,6 +78,8 @@ namespace ermitsognnedeFunctions.Services
                         Incidence = csvModel.Incidence,
                         IsClosed = csvModel.StatusForAutomaticClosing.ToLowerInvariant() == "nedlukket",
                         Municipality = csvModel.Municipality.ToLowerInvariant() == "na" ? null : csvModel.Municipality,
+                        Municipality2 = csvModel.Municipality2.ToLowerInvariant() == "na" ? null : csvModel.Municipality2,
+                        Municipality3 = csvModel.Municipality3.ToLowerInvariant() == "na" ? null : csvModel.Municipality3,
                         NewInfectedCount = csvModel.NewInfectedCount,
                         PositivePercentage = csvModel.PositivePercentage,
                         StartOfLatestAutomaticShutdown = StartOfLatestAutomaticShutdownDate
