@@ -66,9 +66,11 @@ namespace ermitsognnedeFunctions.Services
                     if (csvModel == null)
                         continue;
 
-                    var StartOfLatestAutomaticShutdownDate = csvModel.StartOfLatestAutomaticShutdown.ToLowerInvariant() != "na" && DateTime.TryParse(csvModel.StartOfLatestAutomaticShutdown, out var dateValue)
-                        ? dateValue
-                        : default(DateTime?);
+                    var culture = CultureInfo.CreateSpecificCulture("da-DK");
+                    var StartOfLatestAutomaticShutdownDate = csvModel.StartOfLatestAutomaticShutdown.ToLowerInvariant() != "na"
+                        && DateTime.TryParseExact(csvModel.StartOfLatestAutomaticShutdown, "dd-MM-yyyy", culture, DateTimeStyles.None, out var dateValue)
+                            ? dateValue
+                            : default(DateTime?);
 
                     results.Add(new DistrictDataJsonModel
                     {
@@ -105,9 +107,11 @@ namespace ermitsognnedeFunctions.Services
                 var closedMunicipalityDataCsvModel = closedMunicipalityDataCsvModels
                     ?.FirstOrDefault(x => x?.Municipality?.ToLowerInvariant() == municipality?.ToLowerInvariant() && x?.MunicipalityCode == municipalityCode);
 
-                return closedMunicipalityDataCsvModel?.StartOfLatestAutomaticShutdown?.ToLowerInvariant() != "na" && DateTime.TryParse(closedMunicipalityDataCsvModel?.StartOfLatestAutomaticShutdown, out var dateValue)
-                    ? dateValue
-                    : default(DateTime?);
+                var culture = CultureInfo.CreateSpecificCulture("da-DK");
+                return closedMunicipalityDataCsvModel?.StartOfLatestAutomaticShutdown?.ToLowerInvariant() != "na"
+                    && DateTime.TryParseExact(closedMunicipalityDataCsvModel?.StartOfLatestAutomaticShutdown, "dd-MM-yyyy", culture, DateTimeStyles.None, out var dateValue)
+                        ? dateValue
+                        : default(DateTime?);
             }
 
             var results = new List<MunicipalityDetailModel>();
