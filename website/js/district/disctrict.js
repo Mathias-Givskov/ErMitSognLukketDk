@@ -66,6 +66,23 @@ $(function () {
             });
 
             if (districtData) {
+                function GetAffectedMuncipalitiesText() {
+                    var muncipalityText = "";
+                    for (var i = 0; i < districtData.municipality_details.length; i++) {
+                        if (!muncipalityText) {
+                            muncipalityText = districtData.municipality_details[i].municipality.replace("kommune", "");
+                        } else {
+                            if (i == districtData.municipality_details.length - 1) {
+                                muncipalityText += " og " + districtData.municipality_details[i].municipality.replace("kommune", "");
+                            } else {
+                                muncipalityText += ", " + districtData.municipality_details[i].municipality.replace("kommune", "");
+                            }
+                        }
+                    }
+
+                    return muncipalityText;
+                }
+
                 var resultCardContainer = config.resultCardContainer();
                 var resultCardTitleContainer = config.resultCardTitleContainer();
                 var cardTitle = config.resultCardTitle();
@@ -84,7 +101,7 @@ $(function () {
                 }
 
                 cardDistrict.html(districtData.district.trim() + " sogn");
-                cardMunicipality.html(districtData.municipality);
+                cardMunicipality.html(GetAffectedMuncipalitiesText() + " kommune");
 
                 function addDetails(idNumber, title, number, description, isAboveThreshold) {
                     number = number.toString().replace(".", ",");
