@@ -5,6 +5,6 @@ namespace ermitsognnedeFunctions.Services.Interfaces
 {
     public interface IDistictService
     {
-        List<DistrictDataJsonModel> GetDistrictDataJsonModels(FileModel fileModel);
+        List<DistrictDataJsonModel> GetDistrictDataJsonModels(List<FileModel> fileModel);
     }
 }

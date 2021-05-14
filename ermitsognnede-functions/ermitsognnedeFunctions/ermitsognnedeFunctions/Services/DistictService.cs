@@ -8,28 +8,30 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace ermitsognnedeFunctions.Services
 {
     public class DistictService : IDistictService
     {
-        public List<DistrictDataJsonModel> GetDistrictDataJsonModels(FileModel fileModel)
+        public List<DistrictDataJsonModel> GetDistrictDataJsonModels(List<FileModel> fileModels)
         {
-            var fileExtension = Path.GetExtension(fileModel.FileName);
+            var fileExtension = Path.GetExtension(fileModels.FirstOrDefault(x => x.FileDataType == FileDataType.DistrictData).FileName);
             switch (fileExtension.ToLower())
             {
                 case ".csv":
-                    return GetFromCsvFile(fileModel);
+                    return GetFromCsvFile(fileModels);
 
                 case ".xlsx":
                 case ".xls":
-                    return GetFromExcelFile(fileModel);
+                    return null;
+                    //return GetFromExcelFile(fileModels.FirstOrDefault(x => x.FileDataType == FileDataType.DistrictData));
             }
 
             return null;
         }
 
-        private List<DistrictDataJsonModel> GetFromCsvFile(FileModel fileModel)
+        private List<DistrictDataJsonModel> GetFromCsvFile(List<FileModel> fileModels)
         {
             var results = new List<DistrictDataJsonModel>();
 
@@ -38,12 +40,24 @@ namespace ermitsognnedeFunctions.Services
                 Delimiter = ";"
             };
 
-            fileModel.Stream.Seek(0, SeekOrigin.Begin);
-            using (var reader = new StreamReader(fileModel.Stream))
-            using (var csvStream = new CsvReader(reader, csvConfig))
+            var districtFile = fileModels.FirstOrDefault(x => x.FileDataType == FileDataType.DistrictData);
+            var municipalityFile = fileModels.FirstOrDefault(x => x.FileDataType == FileDataType.Municipality);
+
+            districtFile.Stream.Seek(0, SeekOrigin.Begin);
+            municipalityFile.Stream.Seek(0, SeekOrigin.Begin);
+
+            using (var municipalityReader = new StreamReader(municipalityFile.Stream))
+            using (var municipalityCsvStream = new CsvReader(municipalityReader, csvConfig))
+            using (var disctrictReader = new StreamReader(districtFile.Stream))
+            using (var districtCsvStream = new CsvReader(disctrictReader, csvConfig))
             {
-                csvStream.Context.RegisterClassMap<DistrictDataCsvModelMapper>();
-                var csvModels = csvStream.GetRecords<DistrictDataCsvModel>();
+                municipalityCsvStream.Context.RegisterClassMap<MunicipalityDataCsvModelMapper>();
+                var municipalityModels = municipalityCsvStream.GetRecords<MunicipalityDataCsvModel>()?.ToList();
+                if (municipalityModels != null)
+                    municipalityModels = municipalityModels.Where(x => x.StatusForAutomaticClosing.ToLowerInvariant() == "nedlukket").ToList();
+
+                districtCsvStream.Context.RegisterClassMap<DistrictDataCsvModelMapper>();
+                var csvModels = districtCsvStream.GetRecords<DistrictDataCsvModel>();
                 if (csvModels == null)
                     return null;
 
@@ -52,7 +66,7 @@ namespace ermitsognnedeFunctions.Services
                     if (csvModel == null)
                         continue;
 
-                    var StartOfLatestAutomaticShutdownDate = csvModel.StartOfLatestAutomaticShutdown.ToLower() != "NA" && DateTime.TryParse(csvModel.StartOfLatestAutomaticShutdown, out var dateValue)
+                    var StartOfLatestAutomaticShutdownDate = csvModel.StartOfLatestAutomaticShutdown.ToLowerInvariant() != "na" && DateTime.TryParse(csvModel.StartOfLatestAutomaticShutdown, out var dateValue)
                         ? dateValue
                         : default(DateTime?);
 
@@ -62,8 +76,8 @@ namespace ermitsognnedeFunctions.Services
                         DistrictCode = csvModel.DistrictCode,
                         DistrictPopulationCount = csvModel.DistrictPopulationCount,
                         Incidence = csvModel.Incidence,
-                        IsClosed = csvModel.StatusForAutomaticClosing.ToLower() == "nedlukket",
-                        Municipality = csvModel.Municipality,
+                        IsClosed = csvModel.StatusForAutomaticClosing.ToLowerInvariant() == "nedlukket",
+                        Municipality = csvModel.Municipality.ToLowerInvariant() == "na" ? null : csvModel.Municipality,
                         NewInfectedCount = csvModel.NewInfectedCount,
                         PositivePercentage = csvModel.PositivePercentage,
                         StartOfLatestAutomaticShutdown = StartOfLatestAutomaticShutdownDate
