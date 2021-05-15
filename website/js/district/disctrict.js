@@ -56,7 +56,8 @@ $(function () {
             districtThresholds: {
                 incidens: 500,
                 newCases: 20,
-                postivePercentage: 2.5
+                postivePercentage: 2.5,
+                municipalityIncidens: 250
             },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
@@ -66,7 +67,8 @@ $(function () {
             resultCardMunicipality: function() { return $("#result-card-municipality"); },
             thresholdincidensSpan: function() { return $("#threshold-incidens"); },
             thresholdNewcasesSpan: function() { return $("#threshold-newcases"); },
-            thresholdpostivePercentageSpan: function() { return $("#threshold-postivepercentage"); }
+            thresholdpostivePercentageSpan: function() { return $("#threshold-postivepercentage"); },
+            thresholdMunicipalityIncidensSpan: function() { return $("#threshold-municipality-incidens"); },
         };
 
         function updateDistrictDetails(districtJsonResponse, searchResponse) {
@@ -198,6 +200,7 @@ $(function () {
                 config.thresholdincidensSpan().html(config.districtThresholds.incidens);
                 config.thresholdNewcasesSpan().html(config.districtThresholds.newCases);
                 config.thresholdpostivePercentageSpan().html(config.districtThresholds.postivePercentage.toString().replace('.', ','));
+                config.thresholdMunicipalityIncidensSpan().html(config.districtThresholds.municipalityIncidens);
             }
         };
 
