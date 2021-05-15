@@ -67,6 +67,7 @@ $(function () {
             resultCardDistrict: function() { return $("#result-card-district"); },
             resultCardDistrictShutdown: function () { return $("#result-card-district-shutdown"); },
             resultCardDistrictShutdownDate: function () { return $("#result-card-district-shutdown-date"); },
+            resultCardMuncipalityShutdownContainer: function () { return $(".result-card-muncipality-shutdown-container"); },
             resultCardMunicipality: function() { return $("#result-card-municipality"); },
             thresholdincidensSpan: function() { return $("#threshold-incidens"); },
             thresholdNewcasesSpan: function() { return $("#threshold-newcases"); },
@@ -110,6 +111,21 @@ $(function () {
                     return muncipalityText;
                 }
 
+                function SetMunicipalitiesShutdownTexts() {
+                    var result = false;
+                    $(".result-card-muncipality-shutdown").hide();
+                    for (var i = 0; i < districtData.municipality_details.length; i++) {
+                        if (districtData.municipality_details[i].is_closed) {
+                            result = true;
+                            $("#result-card-muncipality-shutdown-muncipality-" + (i + 1)).html(districtData.municipality_details[i].municipality);
+                            $("#result-card-muncipality-shutdown-date-" + (i + 1)).html(formatDateString(districtData.municipality_details[i].start_of_latest_automatic_shutdown));
+                            $("#result-card-muncipality-shutdown-" + (i + 1)).show();
+                        }
+                    }
+
+                    return result;
+                }
+
                 function isMunicipalityCodeClosed() {
                     var result = false;
                     for (var i = 0; i < districtData.municipality_details.length; i++) {
@@ -122,6 +138,7 @@ $(function () {
                 }
 
                 municipalityCodeClosed = isMunicipalityCodeClosed();
+
                 var resultCardContainer = config.resultCardContainer();
                 var resultCardTitleContainer = config.resultCardTitleContainer();
                 var cardTitle = config.resultCardTitle();
@@ -129,6 +146,13 @@ $(function () {
                 var cardDistrictShutdown = config.resultCardDistrictShutdown();
                 var cardDistrictShutdownDate = config.resultCardDistrictShutdownDate();
                 var cardMunicipality = config.resultCardMunicipality();
+
+                var anyClosedMunicipalities = SetMunicipalitiesShutdownTexts();
+                if (anyClosedMunicipalities) {
+                    config.resultCardMuncipalityShutdownContainer().show();
+                } else {
+                    config.resultCardMuncipalityShutdownContainer().hide();
+                }
 
                 if (districtData.is_closed) {
                     resultCardTitleContainer.removeClass("bg-success");
@@ -139,9 +163,20 @@ $(function () {
                     cardDistrictShutdown.show();
                 } else {
                     resultCardTitleContainer.removeClass("bg-danger");
-                    resultCardTitleContainer.addClass("bg-success");
-                    cardTitle.html("Dit sogn er åbent!");
+                    resultCardTitleContainer.removeClass("bg-success");
+
+                    if (municipalityCodeClosed) {
+                        resultCardTitleContainer.addClass("bg-danger");
+                        cardTitle.html("Din kommune er desværre lukket!");
+                    } else {
+                        resultCardTitleContainer.addClass("bg-success");
+                        cardTitle.html("Dit sogn er åbent!");
+                    }
+
                     cardDistrictShutdown.hide();
+
+                    if (!anyClosedMunicipalities)
+                        config.resultCardMuncipalityShutdownContainer().hide();
                 }
 
                 cardDistrict.html(districtData.district.trim() + " sogn");
@@ -182,6 +217,23 @@ $(function () {
                 };
 
                 Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData);
+
+                if (municipalityCode && municipalityCodeClosed) {
+                    var geoJsonData = {
+                        districtData: districtData,
+                        features: municipalitySearchResponse.data.features,
+                        featureOptions: {
+                            color: "#FE3249",
+                            style: {
+                                fillPattern: LeafletMap.CustomMap.main.patterns.stripPattern,
+                                fillOpacity: 1.0,
+                                weight: 1,
+                            }
+                        }
+                    };
+
+                    Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData);
+                }
             } else {
                 config.resultCardContainer().hide();
                 $("#district-details").hide();
