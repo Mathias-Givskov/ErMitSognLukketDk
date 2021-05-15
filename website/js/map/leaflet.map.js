@@ -57,9 +57,11 @@ $(function () {
             map: {},
             markers: [],
             features: [],
+            patterns: { stripPattern: new L.StripePattern({ weight: 1, angle: 120, color: '#FE3249'}) },
             init: function() {
                 var map = new L.map('map', config.defaultMapOptions);
                 var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                customMap.main.patterns.stripPattern.addTo(map);
                 map.addLayer(layer);
                 map.on('click', function(e) {
                     var selected = {

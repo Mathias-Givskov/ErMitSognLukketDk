@@ -5,65 +5,93 @@ $(function () {
         var config = {
             districtJsonUrl: function () {
                 function getTimeOfDayInSeconds(date) {
-                    return date.getSeconds() + (60 * (date.getMinutes() + (60 * date.getHours())));
+                    return date.seconds() + (60 * (date.minutes() + (60 * date.seconds())));
                 }
 
                 var districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
-                if (districtJsonNextDownloadDate) {
-                    var currentDate = new Date();
-                    var nextRefreshDate = new Date(districtJsonNextDownloadDate);
-                    nextRefreshDate.setHours(14);
-                    nextRefreshDate.setMinutes(2);
-                    nextRefreshDate.setSeconds(0);
-
-                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
-                        nextRefreshDate.setDate(currentDate.getDate() + 1);
-                    }
-
-                    var testDate = new Date();
-                    testDate.setDate(currentDate.getDate() + 1);
-                    if (nextRefreshDate.getDate() < testDate.getDate())
-                        localStorage.setItem("district-json-next-download-date", nextRefreshDate);
-                } else {
-                    var currentDate = new Date();
-                    var nextRefreshDate = new Date();
-                    nextRefreshDate.setHours(14);
-                    nextRefreshDate.setMinutes(2);
-                    nextRefreshDate.setSeconds(0);
-
-                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
-                        nextRefreshDate.setDate(currentDate.getDate() + 1)
-                    }
-
-                    localStorage.setItem("district-json-next-download-date", nextRefreshDate);
+                var dayDiff = moment().diff(moment(districtJsonNextDownloadDate), 'days');
+                if (dayDiff > 2)
+                {
+                    districtJsonNextDownloadDate = null;
                 }
 
-                var nextRefreshDate = new Date(districtJsonNextDownloadDate);
+                if (districtJsonNextDownloadDate) {
+                    var currentDate = new moment();
+                    var nextRefreshDate = new moment(districtJsonNextDownloadDate);
+                    nextRefreshDate.hours(14);
+                    nextRefreshDate.minutes(2);
+                    nextRefreshDate.seconds(0);
+
+                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
+                        nextRefreshDate = new moment();
+                        nextRefreshDate.hours(14);
+                        nextRefreshDate.minutes(2);
+                        nextRefreshDate.seconds(0);
+                        nextRefreshDate.date(nextRefreshDate.date() + 1);
+                    }
+
+                    var testDate = new moment();
+                    testDate.date(currentDate.date() + 1);
+                    if (nextRefreshDate.date() < testDate.date())
+                        localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
+                } else {
+                    var currentDate = new moment();
+                    var nextRefreshDate = new moment();
+                    nextRefreshDate.hours(14);
+                    nextRefreshDate.minutes(2);
+                    nextRefreshDate.seconds(0);
+
+                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
+                        nextRefreshDate.date(currentDate.date() + 1)
+                    }
+
+                    localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
+                }
+
+                districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
+                var nextRefreshDate = new moment(districtJsonNextDownloadDate);
                 var manualVersion = "2";
-                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime() + manualVersion;
+                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.valueOf() + manualVersion;
             },
             districtThresholds: {
                 incidens: 500,
                 newCases: 20,
-                postivePercentage: 2.5
+                postivePercentage: 2.5,
+                municipalityIncidens: 250
             },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
+            municipalitySearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/kommuner?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
             resultCardTitleContainer: function() { return $("#result-card-title-container"); },
             resultCardTitle: function() { return $("#result-card-title"); },
             resultCardDistrict: function() { return $("#result-card-district"); },
+            resultCardDistrictShutdown: function () { return $("#result-card-district-shutdown"); },
+            resultCardDistrictShutdownDate: function () { return $("#result-card-district-shutdown-date"); },
+            resultCardMuncipalityShutdownContainer: function () { return $(".result-card-muncipality-shutdown-container"); },
             resultCardMunicipality: function() { return $("#result-card-municipality"); },
             thresholdincidensSpan: function() { return $("#threshold-incidens"); },
             thresholdNewcasesSpan: function() { return $("#threshold-newcases"); },
-            thresholdpostivePercentageSpan: function() { return $("#threshold-postivepercentage"); }
+            thresholdpostivePercentageSpan: function() { return $("#threshold-postivepercentage"); },
+            thresholdMunicipalityIncidensSpan: function() { return $("#threshold-municipality-incidens"); },
         };
 
-        function updateDistrictDetails(districtJsonResponse, searchResponse) {
+        function formatDateString(dateString) {
+            var date = new moment(dateString);
+            return date.date() + "-" + (date.month() + 1) + "-" + date.year();
+        }
+
+        function updateDistrictDetails(districtJsonResponse, searchResponse, municipalitySearchResponse) {
             var districtData = districtJsonResponse.data.find(function (x) {
                 if (searchResponse.data.features[0])
                     return x.district_code == searchResponse.data.features[0].properties.kode;
                 return false;
             });
+
+            var municipalityCode = null;
+            var municipalityCodeClosed = false;
+            if (municipalitySearchResponse.data.features[0]) {
+                var municipalityCode = municipalitySearchResponse.data.features[0].properties.kode;
+            }
 
             if (districtData) {
                 function GetAffectedMuncipalitiesText() {
@@ -83,25 +111,76 @@ $(function () {
                     return muncipalityText;
                 }
 
+                function SetMunicipalitiesShutdownTexts() {
+                    var result = false;
+                    $(".result-card-muncipality-shutdown").hide();
+                    for (var i = 0; i < districtData.municipality_details.length; i++) {
+                        if (districtData.municipality_details[i].is_closed) {
+                            result = true;
+                            $("#result-card-muncipality-shutdown-muncipality-" + (i + 1)).html(districtData.municipality_details[i].municipality);
+                            $("#result-card-muncipality-shutdown-date-" + (i + 1)).html(formatDateString(districtData.municipality_details[i].start_of_latest_automatic_shutdown));
+                            $("#result-card-muncipality-shutdown-" + (i + 1)).show();
+                        }
+                    }
+
+                    return result;
+                }
+
+                function isMunicipalityCodeClosed() {
+                    var result = false;
+                    for (var i = 0; i < districtData.municipality_details.length; i++) {
+                        result = districtData.municipality_details[i].is_closed && districtData.municipality_details[i].municipality_code == municipalityCode;
+                        if (result)
+                            break;
+                    }
+
+                    return result;
+                }
+
+                municipalityCodeClosed = isMunicipalityCodeClosed();
+
                 var resultCardContainer = config.resultCardContainer();
                 var resultCardTitleContainer = config.resultCardTitleContainer();
                 var cardTitle = config.resultCardTitle();
                 var cardDistrict = config.resultCardDistrict();
+                var cardDistrictShutdown = config.resultCardDistrictShutdown();
+                var cardDistrictShutdownDate = config.resultCardDistrictShutdownDate();
                 var cardMunicipality = config.resultCardMunicipality();
+
+                var anyClosedMunicipalities = SetMunicipalitiesShutdownTexts();
+                if (anyClosedMunicipalities) {
+                    config.resultCardMuncipalityShutdownContainer().show();
+                } else {
+                    config.resultCardMuncipalityShutdownContainer().hide();
+                }
 
                 if (districtData.is_closed) {
                     resultCardTitleContainer.removeClass("bg-success");
                     resultCardTitleContainer.addClass("bg-danger");
                     cardTitle.html("Dit sogn er desværre lukket!");
 
+                    cardDistrictShutdownDate.html(formatDateString(districtData.start_of_latest_automatic_shutdown));
+                    cardDistrictShutdown.show();
                 } else {
                     resultCardTitleContainer.removeClass("bg-danger");
-                    resultCardTitleContainer.addClass("bg-success");
-                    cardTitle.html("Dit sogn er åbent!");
+                    resultCardTitleContainer.removeClass("bg-success");
+
+                    if (municipalityCodeClosed) {
+                        resultCardTitleContainer.addClass("bg-danger");
+                        cardTitle.html("Din kommune er desværre lukket!");
+                    } else {
+                        resultCardTitleContainer.addClass("bg-success");
+                        cardTitle.html("Dit sogn er åbent!");
+                    }
+
+                    cardDistrictShutdown.hide();
+
+                    if (!anyClosedMunicipalities)
+                        config.resultCardMuncipalityShutdownContainer().hide();
                 }
 
                 cardDistrict.html(districtData.district.trim() + " sogn");
-                cardMunicipality.html(GetAffectedMuncipalitiesText() + " kommune");
+                cardMunicipality.html(GetAffectedMuncipalitiesText().trim() + " kommune");
 
                 function addDetails(idNumber, title, number, description, isAboveThreshold) {
                     number = number.toString().replace(".", ",");
@@ -138,6 +217,23 @@ $(function () {
                 };
 
                 Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData);
+
+                if (municipalityCode && municipalityCodeClosed) {
+                    var geoJsonData = {
+                        districtData: districtData,
+                        features: municipalitySearchResponse.data.features,
+                        featureOptions: {
+                            color: "#FE3249",
+                            style: {
+                                fillPattern: LeafletMap.CustomMap.main.patterns.stripPattern,
+                                fillOpacity: 1.0,
+                                weight: 1,
+                            }
+                        }
+                    };
+
+                    Utils.EventEmitter.trigger(main.events.districtFound, geoJsonData);
+                }
             } else {
                 config.resultCardContainer().hide();
                 $("#district-details").hide();
@@ -147,8 +243,11 @@ $(function () {
         function searchDistrictByCords(x, y) {
             function handleDistrictJson(districtJsonResponse) {
                 axios.get(config.districtSearchUrl(x,y))
-                    .then(function(searchResponse) {
-                        updateDistrictDetails(districtJsonResponse, searchResponse);
+                    .then(function(districtSearchResponse) {
+                        axios.get(config.municipalitySearchUrl(x, y))
+                            .then(function (municipalitySearchResponse) {
+                                updateDistrictDetails(districtJsonResponse, districtSearchResponse, municipalitySearchResponse);
+                        });
                     }
                 );
             }
@@ -187,6 +286,7 @@ $(function () {
                 config.thresholdincidensSpan().html(config.districtThresholds.incidens);
                 config.thresholdNewcasesSpan().html(config.districtThresholds.newCases);
                 config.thresholdpostivePercentageSpan().html(config.districtThresholds.postivePercentage.toString().replace('.', ','));
+                config.thresholdMunicipalityIncidensSpan().html(config.districtThresholds.municipalityIncidens);
             }
         };
 

@@ -10,10 +10,12 @@
       <link rel="stylesheet" href="/css/main.css"/>
       <link rel="stylesheet" href="/css/dawa-autocomplete.css"/>
       <link rel="stylesheet" href="/css/map.css"/>
+      <script src="/js/utils/moment.min.js"></script>
       <script src="js/jquery/jquery-3.6.0.min.js"></script>
       <script src="/js/utils/Utils.EventEmitter.js"></script>
       <script src="/js/utils/Utils.UrlHelper.js"></script>
       <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+      <script src="/js/map/leaflet.pattern.js"></script>
       <script src="/js/dawa/dawa-autocomplete2.min.js"></script>
       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
       <script src="/js/map/dawa.autocomplete.js"></script>
@@ -74,6 +76,18 @@
                     <div id="result-card-title-container" class="card-header text-white">
                         <h2 id="result-card-title"></h2>
                         <span id="result-card-district"></span> - <span id="result-card-municipality"></span>
+                        <div>
+                            <span id="result-card-district-shutdown" style="display: none; font-size: 12px;">Sogn har været lukket siden d. <span id="result-card-district-shutdown-date"></span></span>
+                            <div class="result-card-muncipality-shutdown-container">
+                                <span id="result-card-muncipality-shutdown-1" class="result-card-muncipality-shutdown" style="display: none; font-size: 12px;"><span id="result-card-muncipality-shutdown-muncipality-1"></span> kommune har været lukket siden d. <span id="result-card-muncipality-shutdown-date-1"></span></span>
+                            </div>
+                            <div class="result-card-muncipality-shutdown-container">
+                                <span id="result-card-muncipality-shutdown-2" class="result-card-muncipality-shutdown" style="display: none; font-size: 12px;"><span id="result-card-muncipality-shutdown-muncipality-2"></span> kommune har været lukket siden d. <span id="result-card-muncipality-shutdown-date-2"></span></span>
+                            </div>
+                            <div class="result-card-muncipality-shutdown-container">
+                                <span id="result-card-muncipality-shutdown-3" class="result-card-muncipality-shutdown" style="display: none; font-size: 12px;"><span id="result-card-muncipality-shutdown-muncipality-3"></span> kommune har været lukket siden d. <span id="result-card-muncipality-shutdown-date-3"></span></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body bg-light text-dark">
                         <div class="card-title">
@@ -105,7 +119,7 @@
             </div>
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5>Hvad skal der til for at et sogn skal lukke ned?</h5>
+                    <h5>Hvad skal der til for at et sogn eller en kommune skal lukke ned?</h5>
                 </div>
                 <div class="card-body">
                     <h6>Et sogn skal lukke ned hvis følgende tre parametre er opfyldt:</h6>
@@ -113,7 +127,11 @@
                         <li>Der er mere end <span id="threshold-incidens">500</span> smittede pr. 100.000 borgere.</li>
                         <li>Der er <span id="threshold-newcases">20</span> eller flere smittetilfælde i alt de sidste syv dage.</li>
                         <li>Positivprocenten er på <span id="threshold-postivepercentage">2,5</span> procent eller mere.</li>
-                    </ul>  
+                    </ul>
+                    <h6>En kommune skal lukke ned hvis følgende parameter er opfyldt:</h6>
+                    <ul>
+                        <li>Der er mere end <span id="threshold-municipality-incidens">250</span> smittede pr. 100.000 borgere i kommunen (testjusteret).</li>
+                    </ul>
                 </div>
             </div>
             <div class="mb-3">
