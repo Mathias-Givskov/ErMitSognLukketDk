@@ -114,7 +114,7 @@ $(function () {
                 }
 
                 cardDistrict.html(districtData.district.trim() + " sogn");
-                cardMunicipality.html(GetAffectedMuncipalitiesText() + " kommune");
+                cardMunicipality.html(GetAffectedMuncipalitiesText().trim() + " kommune");
 
                 function addDetails(idNumber, title, number, description, isAboveThreshold) {
                     number = number.toString().replace(".", ",");
