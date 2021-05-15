@@ -84,6 +84,12 @@ $(function () {
                 return false;
             });
 
+            var municipalityCode = null;
+            var municipalityCodeClosed = false;
+            if (municipalitySearchResponse.data.features[0]) {
+                var municipalityCode = municipalitySearchResponse.data.features[0].properties.kode;
+            }
+
             if (districtData) {
                 function GetAffectedMuncipalitiesText() {
                     var muncipalityText = "";
@@ -102,6 +108,18 @@ $(function () {
                     return muncipalityText;
                 }
 
+                function isMunicipalityCodeClosed() {
+                    var result = false;
+                    for (var i = 0; i < districtData.municipality_details.length; i++) {
+                        result = districtData.municipality_details[i].is_closed && districtData.municipality_details[i].municipality_code == municipalityCode;
+                        if (result)
+                            break;
+                    }
+
+                    return result;
+                }
+
+                municipalityCodeClosed = isMunicipalityCodeClosed();
                 var resultCardContainer = config.resultCardContainer();
                 var resultCardTitleContainer = config.resultCardTitleContainer();
                 var cardTitle = config.resultCardTitle();
