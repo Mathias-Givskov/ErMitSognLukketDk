@@ -4,53 +4,36 @@ $(function () {
     (function (main) {
         var config = {
             districtJsonUrl: function () {
-                function getTimeOfDayInSeconds(date) {
-                    return date.seconds() + (60 * (date.minutes() + (60 * date.seconds())));
-                }
+                var currentDownloadDate = new moment();
+                currentDownloadDate.hours(14);
+                currentDownloadDate.minutes(2);
+                currentDownloadDate.seconds(0);
+
+                var currentTime = new moment();
 
                 var districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
-                var dayDiff = moment().diff(moment(districtJsonNextDownloadDate), 'days');
-                if (dayDiff > 2)
+                var nextRefreshDate = moment(districtJsonNextDownloadDate);
+                if (nextRefreshDate.date() == currentDownloadDate.date() && currentTime < currentDownloadDate) {
+                    nextRefreshDate = moment(districtJsonNextDownloadDate);
+                }
+                else if (nextRefreshDate < currentDownloadDate)
                 {
-                    districtJsonNextDownloadDate = null;
-                }
-
-                if (districtJsonNextDownloadDate) {
-                    var currentDate = new moment();
-                    var nextRefreshDate = new moment(districtJsonNextDownloadDate);
+                    nextRefreshDate = new moment();
+                    nextRefreshDate.date(currentDownloadDate.date() + 1);
                     nextRefreshDate.hours(14);
                     nextRefreshDate.minutes(2);
                     nextRefreshDate.seconds(0);
-
-                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
-                        nextRefreshDate = new moment();
-                        nextRefreshDate.hours(14);
-                        nextRefreshDate.minutes(2);
-                        nextRefreshDate.seconds(0);
-                        nextRefreshDate.date(nextRefreshDate.date() + 1);
-                    }
-
-                    var testDate = new moment();
-                    testDate.date(currentDate.date() + 1);
-                    if (nextRefreshDate.date() < testDate.date())
-                        localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
-                } else {
-                    var currentDate = new moment();
-                    var nextRefreshDate = new moment();
+                } else if (!districtJsonNextDownloadDate) {
+                    nextRefreshDate = new moment();
+                    if (new moment() > currentDownloadDate)
+                        nextRefreshDate.date(currentDownloadDate.date() + 1);
                     nextRefreshDate.hours(14);
                     nextRefreshDate.minutes(2);
                     nextRefreshDate.seconds(0);
-
-                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
-                        nextRefreshDate.date(currentDate.date() + 1)
-                    }
-
-                    localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
                 }
 
-                districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
-                var nextRefreshDate = new moment(districtJsonNextDownloadDate);
-                var manualVersion = "2";
+                localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
+                var manualVersion = "3";
                 return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.valueOf() + manualVersion;
             },
             districtThresholds: {
