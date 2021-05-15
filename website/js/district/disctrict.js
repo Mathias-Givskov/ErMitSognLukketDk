@@ -60,6 +60,7 @@ $(function () {
                 municipalityIncidens: 250
             },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
+            municipalitySearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/kommuner?x=" + x + "&y=" + y + "&format=geojson"; },
             resultCardContainer: function() { return $(".result-card-container"); },
             resultCardTitleContainer: function() { return $("#result-card-title-container"); },
             resultCardTitle: function() { return $("#result-card-title"); },
@@ -76,7 +77,7 @@ $(function () {
             return date.date() + "-" + (date.month() + 1) + "-" + date.year();
         }
 
-        function updateDistrictDetails(districtJsonResponse, searchResponse) {
+        function updateDistrictDetails(districtJsonResponse, searchResponse, municipalitySearchResponse) {
             var districtData = districtJsonResponse.data.find(function (x) {
                 if (searchResponse.data.features[0])
                     return x.district_code == searchResponse.data.features[0].properties.kode;
@@ -165,8 +166,11 @@ $(function () {
         function searchDistrictByCords(x, y) {
             function handleDistrictJson(districtJsonResponse) {
                 axios.get(config.districtSearchUrl(x,y))
-                    .then(function(searchResponse) {
-                        updateDistrictDetails(districtJsonResponse, searchResponse);
+                    .then(function(districtSearchResponse) {
+                        axios.get(config.municipalitySearchUrl(x, y))
+                            .then(function (municipalitySearchResponse) {
+                                updateDistrictDetails(districtJsonResponse, districtSearchResponse, municipalitySearchResponse);
+                        });
                     }
                 );
             }
