@@ -71,6 +71,11 @@ $(function () {
             thresholdMunicipalityIncidensSpan: function() { return $("#threshold-municipality-incidens"); },
         };
 
+        function formatDateString(dateString) {
+            var date = new moment(dateString);
+            return date.date() + "-" + (date.month() + 1) + "-" + date.year();
+        }
+
         function updateDistrictDetails(districtJsonResponse, searchResponse) {
             var districtData = districtJsonResponse.data.find(function (x) {
                 if (searchResponse.data.features[0])
