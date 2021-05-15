@@ -5,42 +5,53 @@ $(function () {
         var config = {
             districtJsonUrl: function () {
                 function getTimeOfDayInSeconds(date) {
-                    return date.getSeconds() + (60 * (date.getMinutes() + (60 * date.getHours())));
+                    return date.seconds() + (60 * (date.minutes() + (60 * date.seconds())));
                 }
 
                 var districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
-                if (districtJsonNextDownloadDate) {
-                    var currentDate = new Date();
-                    var nextRefreshDate = new Date(districtJsonNextDownloadDate);
-                    nextRefreshDate.setHours(14);
-                    nextRefreshDate.setMinutes(2);
-                    nextRefreshDate.setSeconds(0);
-
-                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
-                        nextRefreshDate.setDate(currentDate.getDate() + 1);
-                    }
-
-                    var testDate = new Date();
-                    testDate.setDate(currentDate.getDate() + 1);
-                    if (nextRefreshDate.getDate() < testDate.getDate())
-                        localStorage.setItem("district-json-next-download-date", nextRefreshDate);
-                } else {
-                    var currentDate = new Date();
-                    var nextRefreshDate = new Date();
-                    nextRefreshDate.setHours(14);
-                    nextRefreshDate.setMinutes(2);
-                    nextRefreshDate.setSeconds(0);
-
-                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
-                        nextRefreshDate.setDate(currentDate.getDate() + 1)
-                    }
-
-                    localStorage.setItem("district-json-next-download-date", nextRefreshDate);
+                var dayDiff = moment().diff(moment(districtJsonNextDownloadDate), 'days');
+                if (dayDiff > 2)
+                {
+                    districtJsonNextDownloadDate = null;
                 }
 
-                var nextRefreshDate = new Date(districtJsonNextDownloadDate);
+                if (districtJsonNextDownloadDate) {
+                    var currentDate = new moment();
+                    var nextRefreshDate = new moment(districtJsonNextDownloadDate);
+                    nextRefreshDate.hours(14);
+                    nextRefreshDate.minutes(2);
+                    nextRefreshDate.seconds(0);
+
+                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
+                        nextRefreshDate = new moment();
+                        nextRefreshDate.hours(14);
+                        nextRefreshDate.minutes(2);
+                        nextRefreshDate.seconds(0);
+                        nextRefreshDate.date(nextRefreshDate.date() + 1);
+                    }
+
+                    var testDate = new moment();
+                    testDate.date(currentDate.date() + 1);
+                    if (nextRefreshDate.date() < testDate.date())
+                        localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
+                } else {
+                    var currentDate = new moment();
+                    var nextRefreshDate = new moment();
+                    nextRefreshDate.hours(14);
+                    nextRefreshDate.minutes(2);
+                    nextRefreshDate.seconds(0);
+
+                    if (getTimeOfDayInSeconds(nextRefreshDate) < getTimeOfDayInSeconds(currentDate)) {
+                        nextRefreshDate.date(currentDate.date() + 1)
+                    }
+
+                    localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
+                }
+
+                districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
+                var nextRefreshDate = new moment(districtJsonNextDownloadDate);
                 var manualVersion = "2";
-                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.getTime() + manualVersion;
+                return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.valueOf() + manualVersion;
             },
             districtThresholds: {
                 incidens: 500,
