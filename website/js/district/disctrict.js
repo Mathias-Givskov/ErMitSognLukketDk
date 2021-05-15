@@ -65,6 +65,8 @@ $(function () {
             resultCardTitleContainer: function() { return $("#result-card-title-container"); },
             resultCardTitle: function() { return $("#result-card-title"); },
             resultCardDistrict: function() { return $("#result-card-district"); },
+            resultCardDistrictShutdown: function () { return $("#result-card-district-shutdown"); },
+            resultCardDistrictShutdownDate: function () { return $("#result-card-district-shutdown-date"); },
             resultCardMunicipality: function() { return $("#result-card-municipality"); },
             thresholdincidensSpan: function() { return $("#threshold-incidens"); },
             thresholdNewcasesSpan: function() { return $("#threshold-newcases"); },
@@ -124,6 +126,8 @@ $(function () {
                 var resultCardTitleContainer = config.resultCardTitleContainer();
                 var cardTitle = config.resultCardTitle();
                 var cardDistrict = config.resultCardDistrict();
+                var cardDistrictShutdown = config.resultCardDistrictShutdown();
+                var cardDistrictShutdownDate = config.resultCardDistrictShutdownDate();
                 var cardMunicipality = config.resultCardMunicipality();
 
                 if (districtData.is_closed) {
@@ -131,10 +135,13 @@ $(function () {
                     resultCardTitleContainer.addClass("bg-danger");
                     cardTitle.html("Dit sogn er desværre lukket!");
 
+                    cardDistrictShutdownDate.html(formatDateString(districtData.start_of_latest_automatic_shutdown));
+                    cardDistrictShutdown.show();
                 } else {
                     resultCardTitleContainer.removeClass("bg-danger");
                     resultCardTitleContainer.addClass("bg-success");
                     cardTitle.html("Dit sogn er åbent!");
+                    cardDistrictShutdown.hide();
                 }
 
                 cardDistrict.html(districtData.district.trim() + " sogn");
