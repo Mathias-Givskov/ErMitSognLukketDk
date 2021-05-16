@@ -39,12 +39,7 @@ $(function () {
 
         var eventFunctions = {
             autoCompletedSelected: function(selected) {
-                removeAllMarkers();
-                removeAllFeatures();
-                setMarkerLocation(selected.data.y, selected.data.x, selected.keepZoomLevel);
-
-                var queryStringParameterObj = createQueryStringObject(selected.data.y, selected.data.x);
-                Utils.UrlHelper.setQueryStringParameter("coordinates", queryStringParameterObj, true, true);
+                customMap.setLocation(selected.data.x, selected.data.y, selected.keepZoomLevel);
             },
             disctictFound: function (geoJsonData) {
                 var feature = L.geoJSON(geoJsonData.features[0], geoJsonData.featureOptions);
@@ -52,6 +47,15 @@ $(function () {
                 customMap.main.features.push(feature);
             }
         };
+
+        customMap.setLocation = function(x, y, keepZoomLevel) {
+            removeAllMarkers();
+            removeAllFeatures();
+            setMarkerLocation(y, x, keepZoomLevel);
+
+            var queryStringParameterObj = createQueryStringObject(y, x);
+            Utils.UrlHelper.setQueryStringParameter("coordinates", queryStringParameterObj, true, true);
+        }
 
         customMap.main = {
             map: {},
