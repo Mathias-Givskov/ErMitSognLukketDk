@@ -4,6 +4,16 @@ $(function () {
     (function (main) {
         var config = {
             districtJsonUrl: function () {
+                const manualVersion = "4";
+                const localStorageKey = "district-json-next-download-date-v" + manualVersion;
+
+                for (let i = 0; i < Number(manualVersion) + 1; i++) {
+                    var key = localStorage.key(i);
+                    if (key && key.includes("district-json-next-download-date") && key != localStorageKey) {
+                        localStorage.removeItem(key);
+                    }
+                }
+
                 var currentDownloadDate = new moment();
                 currentDownloadDate.hours(14);
                 currentDownloadDate.minutes(2);
@@ -11,7 +21,7 @@ $(function () {
 
                 var currentTime = new moment();
 
-                var districtJsonNextDownloadDate = localStorage.getItem("district-json-next-download-date");
+                var districtJsonNextDownloadDate = localStorage.getItem(localStorageKey);
                 var nextRefreshDate = moment(districtJsonNextDownloadDate);
                 if (nextRefreshDate.date() == currentDownloadDate.date() && currentTime < currentDownloadDate) {
                     nextRefreshDate = moment(districtJsonNextDownloadDate);
@@ -32,8 +42,7 @@ $(function () {
                     nextRefreshDate.seconds(0);
                 }
 
-                localStorage.setItem("district-json-next-download-date", nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
-                var manualVersion = "3";
+                localStorage.setItem(localStorageKey, nextRefreshDate.format('YYYY-MM-DD HH:mm:ss'));
                 return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.valueOf() + manualVersion;
             },
             districtThresholds: {
