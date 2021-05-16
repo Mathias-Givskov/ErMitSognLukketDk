@@ -72,16 +72,20 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
+                            <p>Gem en lokation til hurtigt at kunne se status omkring den gemte lokation.
+                            <br><span>Dette er kun gemt lokalt på din enhed.</span>
+                            </p>
+
                             <form id="save-location-modal-form" class="needs-validation" action="javascript:void(0);" novalidate>
                                 <div class="mb-3">
-                                    <label id="locationName_label" for="locationName" class="form-label">Navn</label>
-                                    <input id="locationName" name="locationName" type="text" class="form-control" placeholder="Navn" required/>
+                                    <label id="locationName_label" for="locationName" class="form-label">Navn:</label>
+                                    <input id="locationName" name="locationName" type="text" class="form-control" placeholder="Hjem" required/>
                                     <div class="invalid-feedback">
                                         Et navn er påkrævet.
                                     </div>
                                 </div>
 
-                                <label id="locationLng_label" for="locationLng" class="form-label">Koordinater</label>
+                                <label id="locationLng_label" for="locationLng" class="form-label">Koordinater:</label>
                                 <div class="mb-3 input-group">
                                     <span class="input-group-text">længdegrad</span>
                                     <input id="locationLng" name="locationLng" type="number" step="0.0000000000000001" class="form-control" required/>
