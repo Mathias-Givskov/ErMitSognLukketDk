@@ -82,6 +82,8 @@ $(function () {
                         keepZoomLevel: true
                     };
 
+                    config.dawaAutocompleteInput().val("");
+
                     Utils.EventEmitter.trigger(Dawa.Autocomplete.events.selected, selected);
                 });
 
