@@ -6,6 +6,10 @@ $(function () {
             defaultMapOptions: {
                 center: [56.077, 10.536],
                 zoom: 7
+            },
+            dawaAutocompleteInput: function() { return $("#dawa-autocomplete-input"); },
+            events: {
+                locationSet: "LeafletMap.CustomMap.locationSet"
             }
         };
 
@@ -35,6 +39,8 @@ $(function () {
             } else {
                 customMap.main.map.setView(latlng, 15);
             }
+
+            Utils.EventEmitter.trigger(config.events.locationSet, null);
         }
 
         var eventFunctions = {
