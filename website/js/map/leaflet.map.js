@@ -6,6 +6,10 @@ $(function () {
             defaultMapOptions: {
                 center: [56.077, 10.536],
                 zoom: 7
+            },
+            dawaAutocompleteInput: function() { return $("#dawa-autocomplete-input"); },
+            events: {
+                locationSet: "LeafletMap.CustomMap.locationSet"
             }
         };
 
@@ -35,16 +39,13 @@ $(function () {
             } else {
                 customMap.main.map.setView(latlng, 15);
             }
+
+            Utils.EventEmitter.trigger(config.events.locationSet, null);
         }
 
         var eventFunctions = {
             autoCompletedSelected: function(selected) {
-                removeAllMarkers();
-                removeAllFeatures();
-                setMarkerLocation(selected.data.y, selected.data.x, selected.keepZoomLevel);
-
-                var queryStringParameterObj = createQueryStringObject(selected.data.y, selected.data.x);
-                Utils.UrlHelper.setQueryStringParameter("coordinates", queryStringParameterObj, true, true);
+                customMap.setLocation(selected.data.x, selected.data.y, selected.keepZoomLevel);
             },
             disctictFound: function (geoJsonData) {
                 var feature = L.geoJSON(geoJsonData.features[0], geoJsonData.featureOptions);
@@ -52,6 +53,15 @@ $(function () {
                 customMap.main.features.push(feature);
             }
         };
+
+        customMap.setLocation = function(x, y, keepZoomLevel) {
+            removeAllMarkers();
+            removeAllFeatures();
+            setMarkerLocation(y, x, keepZoomLevel);
+
+            var queryStringParameterObj = createQueryStringObject(y, x);
+            Utils.UrlHelper.setQueryStringParameter("coordinates", queryStringParameterObj, true, true);
+        }
 
         customMap.main = {
             map: {},
@@ -71,6 +81,8 @@ $(function () {
                         },
                         keepZoomLevel: true
                     };
+
+                    config.dawaAutocompleteInput().val("");
 
                     Utils.EventEmitter.trigger(Dawa.Autocomplete.events.selected, selected);
                 });

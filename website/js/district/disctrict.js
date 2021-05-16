@@ -245,6 +245,9 @@ $(function () {
             },
             gotGeoLocationFromDevice: function(position) {
                 searchDistrictByCords(position.coords.longitude, position.coords.latitude);
+            },
+            locationLoaded: function(locationObj) {
+                searchDistrictByCords(locationObj.lng, locationObj.lat);
             }
         };
 
@@ -264,6 +267,8 @@ $(function () {
                 if (LeafletMap || LeafletMap.CustomMap) {
                     Utils.EventEmitter.subscribe(LeafletMap.CustomMap.events.gotCurrentLocationFromDevice, eventFunctions.gotGeoLocationFromDevice)
                 }
+
+                Utils.EventEmitter.subscribe("location.manager.locationLoaded", eventFunctions.locationLoaded);
             },
             writeDistrictThresholds: function() {
                 config.thresholdincidensSpan().html(config.districtThresholds.incidens);

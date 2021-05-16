@@ -4,8 +4,8 @@
       <title>Er mit sogn lukket?</title>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
       <link rel="stylesheet" href="/css/main.css"/>
       <link rel="stylesheet" href="/css/dawa-autocomplete.css"/>
@@ -19,8 +19,9 @@
       <script src="/js/dawa/dawa-autocomplete2.min.js"></script>
       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
       <script src="/js/map/dawa.autocomplete.js"></script>
-      <script src="/js/map/leaflet.map.js"></script>
-      <script src="/js/district/disctrict.js"></script>
+      <script src="/js/map/leaflet.map.js?v=1"></script>
+      <script src="/js/district/disctrict.js?v=1"></script>
+      <script src="/js/map/location.manager.js?v=1"></script>
    </head>
    <body>
         <div class="container">
@@ -63,12 +64,60 @@
                     </div>
                 </div>
             </div>
+            <div id="save-location-modal" class="modal fade" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Gem lokation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Gem en lokation til hurtigt at kunne se status omkring den gemte lokation.
+                            <br><span>Dette er kun gemt lokalt på din enhed.</span>
+                            </p>
+
+                            <form id="save-location-modal-form" class="needs-validation" action="javascript:void(0);" novalidate>
+                                <div class="mb-3">
+                                    <label id="locationName_label" for="locationName" class="form-label">Navn:</label>
+                                    <input id="locationName" name="locationName" type="text" class="form-control" placeholder="Hjem" required/>
+                                    <div class="invalid-feedback">
+                                        Et navn er påkrævet.
+                                    </div>
+                                </div>
+
+                                <label id="locationLng_label" for="locationLng" class="form-label">Koordinater:</label>
+                                <div class="mb-3 input-group">
+                                    <span class="input-group-text">længdegrad</span>
+                                    <input id="locationLng" name="locationLng" type="number" step="0.0000000000000001" class="form-control" required/>
+                                    <div class="invalid-feedback">
+                                        En længdegrad er påkrævet.
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 input-group">
+                                    <span class="input-group-text">Breddegrad</span>
+                                    <input id="locationLat" name="locationLat" type="number" step="0.0000000000000001" class="form-control" required/>
+                                    <div class="invalid-feedback" for="locationLat">
+                                        En Breddegrad er påkrævet.
+                                    </div>
+                                </div>
+
+                                <button id="save-location-btn" type="submit" class="btn btn-success">Gem</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="autocomplete-container input-group mb-3" style="width: 100%; max-width: 100%;">
                 <input type="search" id="dawa-autocomplete-input" class="form-control" placeholder="Indtast addresse">
             </div>
+            <div id="save-locations-container" class="mb-3">
+                <button id="add-location-btn" type="button" class="btn btn-primary mb-1" style="display: none; width: 100%; max-width: 100%;">Gem lokation</button>
+                <div id="saved-locations-container" class="list-group"></div>
+            </div>
             <div class="map-container mb-3">
                 <div class="map-frame">
-                  <div id="map"></div>
+                    <div id="map"></div>
                 </div>
             </div>
             <div class="result-card-container mb-3" style="display: none;">
