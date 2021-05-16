@@ -21,6 +21,7 @@
       <script src="/js/map/dawa.autocomplete.js"></script>
       <script src="/js/map/leaflet.map.js"></script>
       <script src="/js/district/disctrict.js"></script>
+      <script src="/js/map/location.manager.js?v=1"></script>
    </head>
    <body>
         <div class="container">
@@ -105,6 +106,10 @@
             </div>
             <div class="autocomplete-container input-group mb-3" style="width: 100%; max-width: 100%;">
                 <input type="search" id="dawa-autocomplete-input" class="form-control" placeholder="Indtast addresse">
+            </div>
+            <div id="save-locations-container" class="mb-3">
+                <button id="add-location-btn" type="button" class="btn btn-primary mb-1" style="display: none; width: 100%; max-width: 100%;">Gem lokation</button>
+                <div id="saved-locations-container" class="list-group"></div>
             </div>
             <div class="map-container mb-3">
                 <div class="map-frame">
