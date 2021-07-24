@@ -46,10 +46,10 @@ $(function () {
                 return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.valueOf() + manualVersion;
             },
             districtThresholds: {
-                incidens: 600,
+                incidens: 1000,
                 newCases: 20,
                 postivePercentage: 3,
-                municipalityIncidens: 300
+                municipalityIncidens: 500
             },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             municipalitySearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/kommuner?x=" + x + "&y=" + y + "&format=geojson"; },
