@@ -4,7 +4,7 @@ $(function () {
     (function (main) {
         var config = {
             districtJsonUrl: function () {
-                const manualVersion = "4";
+                const manualVersion = "5";
                 const localStorageKey = "district-json-next-download-date-v" + manualVersion;
 
                 for (let i = 0; i < Number(manualVersion) + 1; i++) {
@@ -46,10 +46,11 @@ $(function () {
                 return "https://ermitsognlukketpublic.blob.core.windows.net/distictjson/discrict-json.json?v=" + nextRefreshDate.valueOf() + manualVersion;
             },
             districtThresholds: {
-                incidens: 1000,
+                incidens: 800,
                 newCases: 20,
                 postivePercentage: 3,
-                municipalityIncidens: 500
+                municipalityIncidens: 400,
+                municipalityNewCases: 20
             },
             districtSearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/sogne?x=" + x + "&y=" + y + "&format=geojson"; },
             municipalitySearchUrl: function(x, y) { return "https://api.dataforsyningen.dk/kommuner?x=" + x + "&y=" + y + "&format=geojson"; },
@@ -65,6 +66,7 @@ $(function () {
             thresholdNewcasesSpan: function() { return $("#threshold-newcases"); },
             thresholdpostivePercentageSpan: function() { return $("#threshold-postivepercentage"); },
             thresholdMunicipalityIncidensSpan: function() { return $("#threshold-municipality-incidens"); },
+            thresholdMunicipalityNewCasesSpan: function() { return $("#threshold-municipality-newcases"); },
         };
 
         function formatDateString(dateString) {
@@ -284,6 +286,7 @@ $(function () {
                 config.thresholdNewcasesSpan().html(config.districtThresholds.newCases);
                 config.thresholdpostivePercentageSpan().html(config.districtThresholds.postivePercentage.toString().replace('.', ','));
                 config.thresholdMunicipalityIncidensSpan().html(config.districtThresholds.municipalityIncidens);
+                config.thresholdMunicipalityNewCasesSpan().html(config.districtThresholds.municipalityNewCases);
             }
         };
 
