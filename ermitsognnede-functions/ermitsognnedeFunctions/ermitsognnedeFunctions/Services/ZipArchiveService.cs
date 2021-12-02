@@ -19,6 +19,8 @@ namespace ermitsognnedeFunctions.Services
                 var districtEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("sognedata-covid-19"));
                 if (districtEntry == null)
                     districtEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("sognedata"));
+                if (districtEntry == null)
+                    districtEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("graensevaerdier_sogn"));
 
                 var districtMemStream = new MemoryStream();
                 await districtEntry.Open().CopyToAsync(districtMemStream);
@@ -32,6 +34,10 @@ namespace ermitsognnedeFunctions.Services
                 results.Add(districtFileModel);
 
                 var municipalityEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("incidenser_kommuner"));
+
+                if (municipalityEntry == null)
+                    municipalityEntry = archive.Entries.FirstOrDefault(x => x.Name.Contains("graensevaerdier_kommune"));
+
                 if (municipalityEntry != null)
                 {
                     var municipalityMemStream = new MemoryStream();

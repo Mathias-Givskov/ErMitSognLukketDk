@@ -37,7 +37,9 @@ namespace ermitsognnedeFunctions.Services
 
             var csvConfig = new CsvConfiguration(new CultureInfo("da-DK", false))
             {
-                Delimiter = ";"
+                Delimiter = ";",
+                HeaderValidated = null,
+                MissingFieldFound = null
             };
 
             var districtFile = fileModels.FirstOrDefault(x => x.FileDataType == FileDataType.DistrictData);
@@ -54,7 +56,7 @@ namespace ermitsognnedeFunctions.Services
                 municipalityCsvStream.Context.RegisterClassMap<MunicipalityDataCsvModelMapper>();
                 var municipalityModels = municipalityCsvStream.GetRecords<MunicipalityDataCsvModel>()?.ToList();
                 if (municipalityModels != null)
-                    municipalityModels = municipalityModels.Where(x => x.StatusForAutomaticClosing.ToLowerInvariant() == "nedlukket").ToList();
+                    municipalityModels = municipalityModels.Where(x => x.StatusForAutomaticClosing?.ToLowerInvariant() == "nedlukket").ToList();
 
                 districtCsvStream.Context.RegisterClassMap<DistrictDataCsvModelMapper>();
                 var csvModels = districtCsvStream.GetRecords<DistrictDataCsvModel>();
@@ -67,7 +69,7 @@ namespace ermitsognnedeFunctions.Services
                         continue;
 
                     var culture = CultureInfo.CreateSpecificCulture("da-DK");
-                    var StartOfLatestAutomaticShutdownDate = csvModel.StartOfLatestAutomaticShutdown.ToLowerInvariant() != "na"
+                    var StartOfLatestAutomaticShutdownDate = csvModel.StartOfLatestAutomaticShutdown?.ToLowerInvariant() != "na"
                         && DateTime.TryParseExact(csvModel.StartOfLatestAutomaticShutdown, "dd-MM-yyyy", culture, DateTimeStyles.None, out var dateValue)
                             ? dateValue
                             : default(DateTime?);
@@ -78,10 +80,10 @@ namespace ermitsognnedeFunctions.Services
                         DistrictCode = csvModel.DistrictCode,
                         DistrictPopulationCount = csvModel.DistrictPopulationCount,
                         Incidence = csvModel.Incidence,
-                        IsClosed = csvModel.StatusForAutomaticClosing.ToLowerInvariant() == "nedlukket",
-                        Municipality = csvModel.Municipality.ToLowerInvariant() == "na" ? null : csvModel.Municipality,
-                        Municipality2 = csvModel.Municipality2.ToLowerInvariant() == "na" ? null : csvModel.Municipality2,
-                        Municipality3 = csvModel.Municipality3.ToLowerInvariant() == "na" ? null : csvModel.Municipality3,
+                        IsClosed = csvModel.StatusForAutomaticClosing?.ToLowerInvariant() == "nedlukket",
+                        Municipality = csvModel.Municipality?.ToLowerInvariant() == "na" ? null : csvModel.Municipality,
+                        Municipality2 = csvModel.Municipality2?.ToLowerInvariant() == "na" ? null : csvModel.Municipality2,
+                        Municipality3 = csvModel.Municipality3?.ToLowerInvariant() == "na" ? null : csvModel.Municipality3,
                         MuncipalityDetails = GetMunicipalityDetailModels(csvModel, municipalityModels),
                         NewInfectedCount = csvModel.NewInfectedCount,
                         PositivePercentage = csvModel.PositivePercentage,

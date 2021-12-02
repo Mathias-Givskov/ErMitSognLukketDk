@@ -23,7 +23,7 @@ namespace ermitsognnedeFunctions.Services
             var address = $"{BaseUrls.Covid19SsiBaseUrl}/overvagningsdata/opgoerelser-over-covid-19-incidenser-og-vaekstrater";
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync(address);
-            var linkWithDataSelector = "a[href^='https://files.ssi.dk/covid19/incidenser-vaekstrater/zip-filer/smitteniveau-kommuner-sogne-covid19']";
+            var linkWithDataSelector = "a[href^='https://files.ssi.dk/covid19/incidenser-vaekstrater/smitteniveau-kommuner-sogne/smitteniveau-kommuner-sogne-covid19']";
             var downloadDataLinkElement = document.QuerySelector(linkWithDataSelector);
 
             var downloadDataLinkUrl = downloadDataLinkElement.GetAttribute("href");

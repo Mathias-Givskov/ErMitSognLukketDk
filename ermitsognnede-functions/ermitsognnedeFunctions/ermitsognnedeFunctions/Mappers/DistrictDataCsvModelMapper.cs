@@ -19,8 +19,8 @@ namespace ermitsognnedeFunctions.Mappers
             Map(m => m.Incidence).Index(9).Default(-1, useOnConversionFailure: true);
             Map(m => m.NewInfectedCount).Index(10).Default(-1, useOnConversionFailure: true);
             Map(m => m.PositivePercentage).Index(11).Default(-1, useOnConversionFailure: true);
-            Map(m => m.StatusForAutomaticClosing).Name("Status for automatisk nedlukning").Default(null, useOnConversionFailure: true);
-            Map(m => m.StartOfLatestAutomaticShutdown).Name("Påbegyndelsesdato for seneste automatiske nedlukning af sognet").Default(null, useOnConversionFailure: true);
+            //Map(m => m.StatusForAutomaticClosing).Name("Status for automatisk nedlukning").Default(null, useOnConversionFailure: true);
+            //Map(m => m.StartOfLatestAutomaticShutdown).Name("Påbegyndelsesdato for seneste automatiske nedlukning af sognet").Default(null, useOnConversionFailure: true);
         }
     }
 }
